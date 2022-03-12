@@ -1,0 +1,299 @@
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 10:59:48 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   1  *-----------------------------------------------------
+   2  * Hjemmeopgave 1.2
+   3  *-----------------------------------------------------
+   4   
+INCLUDE    C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\IOdata1_2.gms
+   6  Sets
+   7  i "Input" /
+   8  PS   "Privat sektor"
+   9  M    "Import"
+  10  Lon1  "Lonsum for lavt uddannede"
+  11  Lon2  "Lonsum for h�jt uddannede" /
+  12   
+  13  o "Output" /
+  14  PS   "Privat sektor"
+  15  PF   "Privat forbrug"
+  16  X    "Eksport" /
+  17  ;
+  18   
+  19   
+  20  Table IO(i,o) "Input-output-tabel"
+  21        PS      PF      X
+  22  PS    0       1300    700
+  23  M     0       700     0
+  24  Lon1  500     0       0
+  25  Lon2  1500    0       0
+  26  ;
+  27   
+  28  Parameter
+  29  bef(j) "arbejdsstyrke med uddannelsestype j"
+****      $120
+**** LINE     24 INCLUDE     C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\IOdata1_2.gms
+**** LINE      5 INPUT       C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\Hjemmeopgave12.gms
+**** 120  Unknown identifier entered as set
+  30  ;
+  31   
+  32  bef('1') = 500;
+  33  bef('2') = 800;
+  34   
+INCLUDE    C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\Hjemmeopgave_1_model2.gms
+  36  *--------------------------------
+  37  set j /1, 2/;
+  38   
+  39  set u /f, c/;
+  40   
+  41  *Parametre defineres
+  42  parameter
+  43  gamma(u) vægte
+  44  N(j) befolkning
+  45  Ey produktionselasticitet
+  46  Ec forbrugselasticitet
+  47  phi udenlandsk efterspørgsel
+  48  Ex eksportelasticitet
+  49  my(j) vægte
+  50  rho(j) arbejdsmarkedsvægte
+  51  w0(j) basisløn
+  52  N0(j) basisbefolkning
+  53  rho0(j) basisbefolkning
+  54  Pi0 basis prisindeks;
+  55   
+  56  variables
+  57  L(j) arbejdskraft
+  58  Y produktion
+  59  p(u) pris
+  60  w(j) løn
+  61  C(u) forbrug
+  62  Pi prisindeks
+  63  X eksport;
+  64   
+  65  equations
+  66  E_1(j) arbejdskraft
+  67  E_2 nul-profit
+  68  E_3(j) arbejdsmarked ligevægt
+  69  E_4 varemarkedet ligevægt
+  70  E_5(u) forbrug
+  71  E_6 budgetrestriktion
+  72  E_7 prisniveau
+  73  E_8 hekscher-ohlin
+  74  E_9 armington;
+  75   
+  76   
+  77   
+  78   
+  79  * Opstiller ligningene og definerer modellen
+  80   
+  81  E_1(j).. L(j) =e= my(j)*(w(j)/p('c'))**(-Ey)*Y;
+  82  E_2.. p('c')*Y =e= sum(j, w(j)*L(j));
+  83  E_3(j).. L(j) =e= rho(j)*N(j);
+  84  E_4.. Y =e= C('c')+X;
+  85  E_5(u).. C(u) =e= gamma(u)*(p(u)/Pi)**(-Ec)*(sum(j, w(j)*rho(j)*N(j))/Pi);
+  86  E_6.. sum(j, w(j)*rho(j)*N(j)) =e= sum(u, p(u)*C(u));
+  87  E_7.. p('f') =e= 1;
+  88  E_8.. p('c') =e= p('f');
+  89  E_9.. X =e= phi*(p('c')/p('f'))**(-Ex);
+  90   
+  91  model HO_luk /E_1, E_2, E_3, E_4, E_5, E_6, E_7, E_8/;
+  92  model AR_luk /E_1, E_2, E_3, E_4, E_5, E_6, E_7, E_9/;
+  93  *Antagelser
+  94  p.l(u) = 1;
+  95  w.l(j) = 1;
+  96  Pi.l = 1;
+  97  Y.l = (IO('Lon1', 'PS')+IO('Lon2', 'PS'))/p.l('c');
+  98  L.l('1') = IO('Lon1', 'PS')/w.l('1');
+  99  L.l('2') = IO('Lon2', 'PS')/w.l('2');
+ 100  X.l = IO('PS', 'X')/p.l('c');
+ 101  C.l('c') = IO('PS', 'PF')/p.l('c');
+ 102  C.l('f') = IO('M', 'PF')/p.l('f');
+ 103  *Kalibrering:
+ 104  Ey = 2;
+ 105  Ec = 0.5;
+ 106  Ex = 5;
+ 107  N(j) = bef(j);
+ 108  my(j) = L.l(j)/Y.l;
+ 109  rho(j) = L.l(j)/N(j);
+ 110  phi = p.l('c')*X.l;
+ 111  gamma(u) = (p.l(u)*C.l(u))/(sum(j, w.l(j)*N(j)*rho(j)));
+ 112  *Gemmer initialværdier
+ 113  N0('1') = 500;
+ 114  N0('2') = 800;
+ 115  w0('1') = 1;
+ 116  w0('2') = 1;
+ 117  rho0('1') = 1;
+ 118  rho0('2') = 1500/800;
+ 119  Pi0 = 1;
+ 120   
+ 121  set objekter /w1, w2, rho1w1, rho2w2, p, Pi, w1Pi, w2Pi, w1p, w2p, Y, sumL, L1, L2, C, pC, Cf, pfCf, X, pX, sumrhowN, sumN, N1, N2, EV, EVI, EVP/;
+ 122  set eksperimenter /baseline_HO, baseline_AR, shock1_HO, shock1_AR/;
+ 123  parameter output(objekter, eksperimenter);
+ 124   
+ 125  *0-stød:
+ 126  solve HO_luk using cns;
+****                        $257
+**** LINE     40 INPUT       C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\Hjemmeopgave12.gms
+**** 257  Solve statement not checked because of previous errors
+ 127  output('w1','baseline_HO') = w.l('1');
+ 128  output('w2','baseline_HO') = w.l('2');
+ 129  output('rho1w1','baseline_HO') = rho('1')*w.l('1');
+ 130  output('rho2w2','baseline_HO') = rho('2')*w.l('2');
+ 131  output('p','baseline_HO') = p.l('c');
+ 132  output('Pi','baseline_HO') = Pi.l;
+ 133  output('w1Pi','baseline_HO') = w.l('1')/Pi.l;
+ 134  output('w2Pi','baseline_HO') = w.l('2')/Pi.l;
+ 135  output('w1p','baseline_HO') = w.l('1')/p.l('c');
+ 136  output('w2p','baseline_HO') = w.l('2')/p.l('c');
+ 137  output('Y','baseline_HO') = Y.l;
+ 138  output('sumL','baseline_HO') = sum(j, L.l(j));
+ 139  output('L1','baseline_HO') = L.l('1');
+ 140  output('L2','baseline_HO') = L.l('2');
+ 141  output('C','baseline_HO') = C.l('c');
+ 142  output('pC','baseline_HO') = p.l('c')*C.l('c');
+ 143  output('Cf','baseline_HO') = C.l('f');
+ 144  output('pfCf','baseline_HO') = p.l('f')*C.l('f');
+ 145  output('X','baseline_HO') = X.l;
+ 146  output('pX','baseline_HO') = p.l('c')*X.l;
+ 147  output('sumrhowN','baseline_HO') = sum(j, rho(j)*w.l(j)*N(j));
+ 148  output('sumN','baseline_HO') = sum(j,N(j));
+ 149  output('N1','baseline_HO') = N('1');
+ 150  output('N2','baseline_HO') = N('2');
+ 151  output('EV','baseline_HO') = ((Pi0-Pi.l)/Pi.l)*sum(j, w.l(j)*rho(j)*N(j))+sum(j, w.l(j)*rho(j)*N(j))-sum(j, w0(j)*rho0(j)*N0(j));
+ 152  output('EVI','baseline_HO') = sum(j, w.l(j)*rho(j)*N(j))-sum(j, w0(j)*rho0(j)*N0(j));
+ 153  output('EVP','baseline_HO') = ((Pi0-Pi.l)/Pi.l)*sum(j, w.l(j)*rho(j)*N(j));
+ 154  display output;
+ 155   
+ 156  solve AR_luk using cns;
+****                        $257
+**** LINE     70 INPUT       C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\Hjemmeopgave12.gms
+**** 257  Solve statement not checked because of previous errors
+ 157  output('w1','baseline_AR') = w.l('1');
+ 158  output('w2','baseline_AR') = w.l('2');
+ 159  output('rho1w1','baseline_AR') = rho('1')*w.l('1');
+ 160  output('rho2w2','baseline_AR') = rho('2')*w.l('2');
+ 161  output('p','baseline_AR') = p.l('c');
+ 162  output('Pi','baseline_AR') = Pi.l;
+ 163  output('w1Pi','baseline_AR') = w.l('1')/Pi.l;
+ 164  output('w2Pi','baseline_AR') = w.l('2')/Pi.l;
+ 165  output('w1p','baseline_AR') = w.l('1')/p.l('c');
+ 166  output('w2p','baseline_AR') = w.l('2')/p.l('c');
+ 167  output('Y','baseline_AR') = Y.l;
+ 168  output('sumL','baseline_AR') = sum(j, L.l(j));
+ 169  output('L1','baseline_AR') = L.l('1');
+ 170  output('L2','baseline_AR') = L.l('2');
+ 171  output('C','baseline_AR') = C.l('c');
+ 172  output('pC','baseline_AR') = p.l('c')*C.l('c');
+ 173  output('Cf','baseline_AR') = C.l('f');
+ 174  output('pfCf','baseline_AR') = p.l('f')*C.l('f');
+ 175  output('X','baseline_AR') = X.l;
+ 176  output('pX','baseline_AR') = p.l('c')*X.l;
+ 177  output('sumrhowN','baseline_AR') = sum(j, rho(j)*w.l(j)*N(j));
+ 178  output('sumN','baseline_AR') = sum(j,N(j));
+ 179  output('N1','baseline_AR') = N('1');
+ 180  output('N2','baseline_AR') = N('2');
+ 181  output('EV','baseline_AR') = ((Pi0-Pi.l)/Pi.l)*sum(j, w.l(j)*rho(j)*N(j))+sum(j, w.l(j)*rho(j)*N(j))-sum(j, w0(j)*rho0(j)*N0(j));
+ 182  output('EVI','baseline_AR') = sum(j, w.l(j)*rho(j)*N(j))-sum(j, w0(j)*rho0(j)*N0(j));
+ 183  output('EVP','baseline_AR') = ((Pi0-Pi.l)/Pi.l)*sum(j, w.l(j)*rho(j)*N(j));
+ 184  display output;
+ 185   
+ 186  *Stød 1: 100 lavtuddannede (type 1) videreuddannes til højtuddannede (type 2):
+ 187  N('1') = N('1')-100;
+ 188  N('2') = N('2')+100;
+ 189  solve HO_luk using cns;
+****                        $257
+**** LINE    103 INPUT       C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\Hjemmeopgave12.gms
+**** 257  Solve statement not checked because of previous errors
+ 190  output('w1','shock1_HO') = w.l('1');
+ 191  output('w2','shock1_HO') = w.l('2');
+ 192  output('rho1w1','shock1_HO') = rho('1')*w.l('1');
+ 193  output('rho2w2','shock1_HO') = rho('2')*w.l('2');
+ 194  output('p','shock1_HO') = p.l('c');
+ 195  output('Pi','shock1_HO') = Pi.l;
+ 196  output('w1Pi','shock1_HO') = w.l('1')/Pi.l;
+ 197  output('w2Pi','shock1_HO') = w.l('2')/Pi.l;
+ 198  output('w1p','shock1_HO') = w.l('1')/p.l('c');
+ 199  output('w2p','shock1_HO') = w.l('2')/p.l('c');
+ 200  output('Y','shock1_HO') = Y.l;
+ 201  output('sumL','shock1_HO') = sum(j, L.l(j));
+ 202  output('L1','shock1_HO') = L.l('1');
+ 203  output('L2','shock1_HO') = L.l('2');
+ 204  output('C','shock1_HO') = C.l('c');
+ 205  output('pC','shock1_HO') = p.l('c')*C.l('c');
+ 206  output('Cf','shock1_HO') = C.l('f');
+ 207  output('pfCf','shock1_HO') = p.l('f')*C.l('f');
+ 208  output('X','shock1_HO') = X.l;
+ 209  output('pX','shock1_HO') = p.l('c')*X.l;
+ 210  output('sumrhowN','shock1_HO') = sum(j, rho(j)*w.l(j)*N(j));
+ 211  output('sumN','shock1_HO') = sum(j,N(j));
+ 212  output('N1','shock1_HO') = N('1');
+ 213  output('N2','shock1_HO') = N('2');
+ 214  output('EV','shock1_HO') = ((Pi0-Pi.l)/Pi.l)*sum(j, w.l(j)*rho(j)*N(j))+sum(j, w.l(j)*rho(j)*N(j))-sum(j, w0(j)*rho0(j)*N0(j));
+ 215  output('EVI','shock1_HO') = sum(j, w.l(j)*rho(j)*N(j))-sum(j, w0(j)*rho0(j)*N0(j));
+ 216  output('EVP','shock1_HO') = ((Pi0-Pi.l)/Pi.l)*sum(j, w.l(j)*rho(j)*N(j));
+ 217  display output;
+ 218   
+ 219  solve AR_luk using cns;
+****                        $257
+**** LINE    133 INPUT       C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\Hjemmeopgave12.gms
+**** 257  Solve statement not checked because of previous errors
+ 220  output('w1','shock1_AR') = w.l('1');
+ 221  output('w2','shock1_AR') = w.l('2');
+ 222  output('rho1w1','shock1_AR') = rho('1')*w.l('1');
+ 223  output('rho2w2','shock1_AR') = rho('2')*w.l('2');
+ 224  output('p','shock1_AR') = p.l('c');
+ 225  output('Pi','shock1_AR') = Pi.l;
+ 226  output('w1Pi','shock1_AR') = w.l('1')/Pi.l;
+ 227  output('w2Pi','shock1_AR') = w.l('2')/Pi.l;
+ 228  output('w1p','shock1_AR') = w.l('1')/p.l('c');
+ 229  output('w2p','shock1_AR') = w.l('2')/p.l('c');
+ 230  output('Y','shock1_AR') = Y.l;
+ 231  output('sumL','shock1_AR') = sum(j, L.l(j));
+ 232  output('L1','shock1_AR') = L.l('1');
+ 233  output('L2','shock1_AR') = L.l('2');
+ 234  output('C','shock1_AR') = C.l('c');
+ 235  output('pC','shock1_AR') = p.l('c')*C.l('c');
+ 236  output('Cf','shock1_AR') = C.l('f');
+ 237  output('pfCf','shock1_AR') = p.l('f')*C.l('f');
+ 238  output('X','shock1_AR') = X.l;
+ 239  output('pX','shock1_AR') = p.l('c')*X.l;
+ 240  output('sumrhowN','shock1_AR') = sum(j, rho(j)*w.l(j)*N(j));
+ 241  output('sumN','shock1_AR') = sum(j,N(j));
+ 242  output('N1','shock1_AR') = N('1');
+ 243  output('N2','shock1_AR') = N('2');
+ 244  output('EV','shock1_AR') = ((Pi0-Pi.l)/Pi.l)*sum(j, w.l(j)*rho(j)*N(j))+sum(j, w.l(j)*rho(j)*N(j))-sum(j, w0(j)*rho0(j)*N0(j));
+ 245  output('EVI','shock1_AR') = sum(j, w.l(j)*rho(j)*N(j))-sum(j, w0(j)*rho0(j)*N0(j));
+ 246  output('EVP','shock1_AR') = ((Pi0-Pi.l)/Pi.l)*sum(j, w.l(j)*rho(j)*N(j));
+ 247  display output;
+ 248   
+ 249  execute_unload "C:\Users\45238\Desktop\OEM\hjemmeopgave12.gdx", output;
+ 250  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\oem.gdx O=C:\aoem\tabel12.xlsx par=output rng=Tabel2!A2';
+
+**** 5 ERROR(S)   0 WARNING(S)
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 10:59:48 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Include File Summary
+
+
+   SEQ   GLOBAL TYPE      PARENT   LOCAL  FILENAME
+
+     1        1 INPUT          0       0  C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\Hjemmeopgave12.gms
+     2        5 INCLUDE        1       5  .C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\IOdata1_2.gms
+     3       35 INCLUDE        1       6  .C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\Hjemmeopgave_1_model2.gms
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  36.2.0 r433180e WEX-WEI
+
+
+USER: Course License                                 S210810|0002AO-GEN
+      University of Copenhagen, Department of Economics         DCE1507
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\Hjemmeopgave12.gms
+Output     C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\Hjemmeopgave12.lst
+
+**** USER ERROR(S) ENCOUNTERED

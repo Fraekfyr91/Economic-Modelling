@@ -1,0 +1,827 @@
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   1   
+   2   
+   3   
+INCLUDE    C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\IOdata1_1.gms
+   5  Sets
+   6  i "Input" /
+   7  PS   "Privat sektor"
+   8  M    "Import"
+   9  Lon  "Lonsum" /
+  10  o "Output" /
+  11  PS   "Privat sektor"
+  12  PF   "Privat forbrug"
+  13  X    "Eksport" /
+  14  ;
+  15   
+  16   
+  17  Table IO(i,o) "Input-output-tabel"
+  18        PS      PF      X
+  19  PS    0       800     200
+  20  M     0       200     0
+  21  Lon   1000    0       0
+  22  ;
+  23   
+INCLUDE    C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\Hjemmeopgave_1_model.gms
+  25  *-----------------------------------------------------
+  26  * Hjemmeopgave 1
+  27  *-----------------------------------------------------
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 2
+Lille åben økonomi
+C o m p i l a t i o n
+
+
+  29   
+  30  *suppressing output
+  32  option limcol =0, limrow=0;
+  33  option solprint=off;
+  34   
+  35  *--------------------------------
+  36   
+  37   
+  38  ***Opstiller modellerne***
+  39   
+  40  set u /f, c/;
+  41  parameter
+  42  gamma(u) vægte
+  43  N befolkning
+  44  A teknologi
+  45  E substitutionselasticitet
+  46  phi udenlandsk efterspørgsel
+  47  Ex eksportelasticitet
+  48  w0 basisløn
+  49  N0 basisbefolkning
+  50  Pi0 basis prisindeks;
+  51  *Definer variable
+  52  variables
+  53  L arbejdskraft
+  54  Y produktion
+  55  p(u) pris
+  56  w løn
+  57  C(u) forbrug
+  58  Pi prisindeks
+  59  X eksport;
+  60   
+  61  *Definerer lignings navne
+  62  equations
+  63  e_1 arbejdskraft
+  64  e_2 nul-profit
+  65  e_3 arbejdsmarked ligevægt
+  66  e_4 varemarkedet ligevægt
+  67  e_5(u) forbrug
+  68  e_6 budgetrestriktion
+  69  e_7 prisniveau
+  70  e_8 hekscher-ohlin
+  71  e_9 armington;
+  72   
+  73  *Angiver ligninger
+  74  e_1.. L =e= (1/A)*Y;
+  75  e_2.. p('c')*Y =e= w*L;
+  76  e_3.. L =e= N;
+  77  e_4.. Y =e= C('c')+X;
+  78  e_5(u).. C(u) =e= gamma(u)*(p(u)/Pi)**(-E)*((w*N)/Pi);
+  79  e_6.. w*N =e= sum(u, p(u)*C(u));
+  80  e_7.. p('f') =e= 1;
+  81  e_8.. p('c') =e= p('f');
+  82  e_9.. X =e= phi*(p('c')/p('f'))**(-Ex);
+  83   
+  84  *Definerer mdellerne
+  85  model HO_luk /e_1, e_2, e_3, e_4, e_5, e_6, e_7, e_8/;
+  86  model AR_luk /e_1, e_2, e_3, e_4, e_5, e_6, e_7, e_9/;
+  87  *Initialisering:
+  88  p.l(u) = 1;
+  89  w.l = 1;
+  90  Pi.l = 1;
+  91  Y.l = IO('Lon', 'PS')/p.l('c');
+  92  L.l = IO('Lon', 'PS')/w.l;
+  93  X.l = IO('PS', 'X')/p.l('c');
+  94  C.l('c') = IO('PS', 'PF')/p.l('c');
+  95  C.l('f') = IO('M', 'PF')/p.l('f');
+  96  *Kalibrering:
+  97  E = 0.5;
+  98  Ex = 5;
+  99  A = Y.l/L.l;
+ 100  N = L.l;
+ 101  phi = p.l('c')*X.l;
+ 102  gamma(u) = (p.l(u)*C.l(u))/(w.l*L.l);
+ 103  N0 = 1000;
+ 104  w0 = 1;
+ 105  Pi0 = 1;
+ 106   
+ 107  set objekter /w, p, Pi, wPi, wp, Y, L, C, Cf, pfCf, X, pX, N, wN, A, phi, EV, EVI, EVP/;
+ 108  set eksperimenter /baseline_HO, baseline_AR, shock1_HO, shock1_AR, shock2_HO, shock2_AR, shock3_AR/;
+ 109  parameter output(objekter, eksperimenter);
+ 110  *0-stød:
+ 111  solve HO_luk using cns;
+ 112  output('w','baseline_HO') = w.l;
+ 113  output('p','baseline_HO') = p.l('c');
+ 114  output('Pi','baseline_HO') = Pi.l;
+ 115  output('wPi','baseline_HO') = w.l/Pi.l;
+ 116  output('wp','baseline_HO') = w.l/p.l('c');
+ 117  output('Y','baseline_HO') = Y.l;
+ 118  output('L','baseline_HO') = L.l;
+ 119  output('C','baseline_HO') = C.l('c');
+ 120  output('Cf','baseline_HO') = C.l('f');
+ 121  output('pfCf','baseline_HO') = p.l('f')*C.l('f');
+ 122  output('X','baseline_HO') = X.l;
+ 123  output('pX','baseline_HO') = p.l('c')*X.l;
+ 124  output('N','baseline_HO') = N;
+ 125  output('wN','baseline_HO') = w.l*N;
+ 126  output('A','baseline_HO') = A;
+ 127  output('phi','baseline_HO') = phi;
+ 128  output('EV','baseline_HO') = (w.l*N)-(w0*N0)+((Pi0-Pi.l)/Pi.l)*w.l*N;
+ 129  output('EVI','baseline_HO') = (w.l*N)-(w0*N0);
+ 130  output('EVP','baseline_HO') = ((Pi0-Pi.l)/Pi.l)*w.l*N;
+ 131  display output;
+ 132   
+ 133   
+ 134  solve AR_luk using cns;
+ 135  parameter output2(objekter, eksperimenter);
+ 136  output2('w','baseline_AR') = w.l;
+ 137  output2('p','baseline_AR') = p.l('c');
+ 138  output2('Pi','baseline_AR') = Pi.l;
+ 139  output2('wPi','baseline_AR') = w.l/Pi.l;
+ 140  output2('wp','baseline_Ar') = w.l/p.l('c');
+ 141  output2('Y','baseline_AR') = Y.l;
+ 142  output2('L','baseline_AR') = L.l;
+ 143  output2('C','baseline_AR') = C.l('c');
+ 144  output2('Cf','baseline_AR') = C.l('f');
+ 145  output2('pfCf','baseline_AR') = p.l('f')*C.l('f');
+ 146  output2('X','baseline_AR') = X.l;
+ 147  output2('pX','baseline_AR') = p.l('c')*X.l;
+ 148  output2('N','baseline_AR') = N;
+ 149  output2('wN','baseline_AR') = w.l*N;
+ 150  output2('A','baseline_AR') = A;
+ 151  output2('phi','baseline_AR') = phi;
+ 152  output2('EV','baseline_AR') = (w.l*N)-(w0*N0)+((Pi0-Pi.l)/Pi.l)*w.l*N;
+ 153  output2('EVI','baseline_AR') = (w.l*N)-(w0*N0);
+ 154  output2('EVP','baseline_AR') = ((Pi0-Pi.l)/Pi.l)*w.l*N;
+ 155  display output2;
+ 156   
+ 157   
+ 158  *Stød 1: arbejdsudbuddet stiger med 10% i begge modeller
+ 159  N = N*1.1;
+ 160  solve HO_luk using cns;
+ 161  parameter output3(objekter, eksperimenter);
+ 162  output3('w','shock1_HO') = w.l;
+ 163  output3('p','shock1_HO') = p.l('c');
+ 164  output3('Pi','shock1_HO') = Pi.l;
+ 165  output3('wPi','shock1_HO') = w.l/Pi.l;
+ 166  output3('wp','shock1_HO') = w.l/p.l('c');
+ 167  output3('Y','shock1_HO') = Y.l;
+ 168  output3('L','shock1_HO') = L.l;
+ 169  output3('C','shock1_HO') = C.l('c');
+ 170  output3('Cf','shock1_HO') = C.l('f');
+ 171  output3('pfCf','shock1_HO') = p.l('f')*C.l('f');
+ 172  output3('X','shock1_HO') = X.l;
+ 173  output3('pX','shock1_HO') = p.l('c')*X.l;
+ 174  output3('N','shock1_HO') = N;
+ 175  output3('wN','shock1_HO') = w.l*N;
+ 176  output3('A','shock1_HO') = A;
+ 177  output3('phi','shock1_HO') = phi;
+ 178  output3('EV','shock1_HO') = (w.l*N)-(w0*N0)+((Pi0-Pi.l)/Pi.l)*w.l*N;
+ 179  output3('EVI','shock1_HO') = (w.l*N)-(w0*N0);
+ 180  output3('EVP','shock1_HO') = ((Pi0-Pi.l)/Pi.l)*w.l*N;
+ 181  display output3;
+ 182   
+ 183   
+ 184  solve AR_luk using cns;
+ 185  parameter output4(objekter, eksperimenter);
+ 186  output4('w','shock1_AR') = w.l;
+ 187  output4('p','shock1_AR') = p.l('c');
+ 188  output4('Pi','shock1_AR') = Pi.l;
+ 189  output4('wPi','shock1_AR') = w.l/Pi.l;
+ 190  output4('wp','shock1_AR') = w.l/p.l('c');
+ 191  output4('Y','shock1_AR') = Y.l;
+ 192  output4('L','shock1_AR') = L.l;
+ 193  output4('C','shock1_AR') = C.l('c');
+ 194  output4('Cf','shock1_AR') = C.l('f');
+ 195  output4('pfCf','shock1_AR') = p.l('f')*C.l('f');
+ 196  output4('X','shock1_AR') = X.l;
+ 197  output4('pX','shock1_AR') = p.l('c')*X.l;
+ 198  output4('N','shock1_AR') = N;
+ 199  output4('wN','shock1_AR') = w.l*N;
+ 200  output4('A','shock1_AR') = A;
+ 201  output4('phi','shock1_AR') = phi;
+ 202  output4('EV','shock1_AR') = (w.l*N)-(w0*N0)+((Pi0-Pi.l)/Pi.l)*w.l*N;
+ 203  output4('EVI','shock1_AR') = (w.l*N)-(w0*N0);
+ 204  output4('EVP','shock1_AR') = ((Pi0-Pi.l)/Pi.l)*w.l*N;
+ 205  display output4;
+ 206   
+ 207  N= N/1.1;
+ 208  *Stød 2: Produktiviteten stiger med 10% i begge modeller
+ 209   
+ 210  A = A*1.1;
+ 211  solve HO_luk using cns;
+ 212  parameter output5(objekter, eksperimenter);
+ 213  output5('w','shock2_HO') = w.l;
+ 214  output5('p','shock2_HO') = p.l('c');
+ 215  output5('Pi','shock2_HO') = Pi.l;
+ 216  output5('wPi','shock2_HO') = w.l/Pi.l;
+ 217  output5('wp','shock2_HO') = w.l/p.l('c');
+ 218  output5('Y','shock2_HO') = Y.l;
+ 219  output5('L','shock2_HO') = L.l;
+ 220  output5('C','shock2_HO') = C.l('c');
+ 221  output5('Cf','shock2_HO') = C.l('f');
+ 222  output5('pfCf','shock2_HO') = p.l('f')*C.l('f');
+ 223  output5('X','shock2_HO') = X.l;
+ 224  output5('pX','shock2_HO') = p.l('c')*X.l;
+ 225  output5('N','shock2_HO') = N;
+ 226  output5('wN','shock2_HO') = w.l*N;
+ 227  output5('A','shock2_HO') = A;
+ 228  output5('phi','shock2_HO') = phi;
+ 229  output5('EV','shock2_HO') = (w.l*N)-(w0*N0)+((Pi0-Pi.l)/Pi.l)*w.l*N;
+ 230  output5('EVI','shock2_HO') = (w.l*N)-(w0*N0);
+ 231  output5('EVP','shock2_HO') = ((Pi0-Pi.l)/Pi.l)*w.l*N;
+ 232  display output5;
+ 233   
+ 234  solve AR_luk using cns;
+ 235  parameter output6(objekter, eksperimenter);
+ 236  output6('w','shock2_AR') = w.l;
+ 237  output6('p','shock2_AR') = p.l('c');
+ 238  output6('Pi','shock2_AR') = Pi.l;
+ 239  output6('wPi','shock2_AR') = w.l/Pi.l;
+ 240  output6('wp','shock2_AR') = w.l/p.l('c');
+ 241  output6('Y','shock2_AR') = Y.l;
+ 242  output6('L','shock2_AR') = L.l;
+ 243  output6('C','shock2_AR') = C.l('c');
+ 244  output6('Cf','shock2_AR') = C.l('f');
+ 245  output6('pfCf','shock2_AR') = p.l('f')*C.l('f');
+ 246  output6('X','shock2_AR') = X.l;
+ 247  output6('pX','shock2_AR') = p.l('c')*X.l;
+ 248  output6('N','shock2_AR') = N;
+ 249  output6('wN','shock2_AR') = w.l*N;
+ 250  output6('A','shock2_AR') = A;
+ 251  output6('phi','shock2_AR') = phi;
+ 252  output6('EV','shock2_AR') = (w.l*N)-(w0*N0)+((Pi0-Pi.l)/Pi.l)*w.l*N;
+ 253  output6('EVI','shock2_AR') = (w.l*N)-(w0*N0);
+ 254  output6('EVP','shock2_AR') = ((Pi0-Pi.l)/Pi.l)*w.l*N;
+ 255  display output6;
+ 256   
+ 257  *  Overfør til excel
+ 258  execute_unload "C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\solve_model1.gdx", output,output2,output3,output4,output5,output6;
+ 259   
+ 260  *=== Now write to variable levels to Excel file from GDX
+ 261  *=== Since we do not specify a sheet, data is placed in first sheet
+ 262  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\solve_model1.gdx O=C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\solve_model1.xlsx par= output rng=ARK_navn!A1';
+ 263  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\solve_model1.gdx O=C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\solve_model1.xlsx par= output2 rng=ARK_navn2!A1';
+ 264  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\solve_model1.gdx O=C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\solve_model1.xlsx par= output3 rng=ARK_navn3!A1';
+ 265  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\solve_model1.gdx O=C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\solve_model1.xlsx par= output4 rng=ARK_navn4!A1';
+ 266  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\solve_model1.gdx O=C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\solve_model1.xlsx par= output5 rng=ARK_navn5!A1';
+ 267  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\solve_model1.gdx O=C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\solve_model1.xlsx par= output6 rng=ARK_navn6!A1';
+ 268   
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 3
+Lille åben økonomi
+Include File Summary
+
+
+   SEQ   GLOBAL TYPE      PARENT   LOCAL  FILENAME
+
+     1        1 INPUT          0       0  C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\Hjemmeopgave_1_solve.gms
+     2        4 INCLUDE        1       4  .C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\IOdata1_1.gms
+     3       24 INCLUDE        1       5  .C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\Hjemmeopgave_1_model.gms
+
+
+COMPILATION TIME     =        0.031 SECONDS      3 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 4
+Lille åben økonomi
+Model Statistics    SOLVE HO_luk Using CNS From line 111
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           8     SINGLE EQUATIONS            9
+BLOCKS OF VARIABLES           7     SINGLE VARIABLES            9
+NON ZERO ELEMENTS            26     NON LINEAR N-Z             14
+CODE LENGTH                  43     CONSTANT POOL              20
+SINGLE =E|X= EQUS             9     SINGLE UNFIXED VARS         9
+
+
+GENERATION TIME      =        0.016 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 5
+Lille åben økonomi
+Solution Report     SOLVE HO_luk Using CNS From line 111
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   HO_luk              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  111
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      16 Solved
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT         2    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Warning **  The value of LFITER is out of range.
+                LFITER is decreased from 2147483647 to 1000000000.
+ 
+                   Pre-triangular equations:   5
+                   Post-triangular equations:  1
+ 
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.001 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 6
+Lille åben økonomi
+E x e c u t i o n
+
+
+----    131 PARAMETER output  
+
+      baseline_~
+
+X        200.000
+c        800.000
+w          1.000
+p          1.000
+Pi         1.000
+wPi        1.000
+wp         1.000
+Y       1000.000
+L       1000.000
+Cf       200.000
+pfCf     200.000
+pX       200.000
+N       1000.000
+wN      1000.000
+A          1.000
+phi      200.000
+
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 7
+Lille åben økonomi
+Model Statistics    SOLVE AR_luk Using CNS From line 134
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           8     SINGLE EQUATIONS            9
+BLOCKS OF VARIABLES           7     SINGLE VARIABLES            9
+NON ZERO ELEMENTS            27     NON LINEAR N-Z             16
+CODE LENGTH                  53     CONSTANT POOL              22
+SINGLE =E|X= EQUS             9     SINGLE UNFIXED VARS         9
+
+
+GENERATION TIME      =        0.000 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 8
+Lille åben økonomi
+Solution Report     SOLVE AR_luk Using CNS From line 134
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   AR_luk              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  134
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      16 Solved
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT         2    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Warning **  The value of LFITER is out of range.
+                LFITER is decreased from 2147483647 to 1000000000.
+ 
+                   Pre-triangular equations:   3
+                   Post-triangular equations:  0
+ 
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.001 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 9
+Lille åben økonomi
+E x e c u t i o n
+
+
+----    155 PARAMETER output2  
+
+      baseline_~
+
+X        200.000
+c        800.000
+w          1.000
+p          1.000
+Pi         1.000
+wPi        1.000
+wp         1.000
+Y       1000.000
+L       1000.000
+Cf       200.000
+pfCf     200.000
+pX       200.000
+N       1000.000
+wN      1000.000
+A          1.000
+phi      200.000
+
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 10
+Lille åben økonomi
+Model Statistics    SOLVE HO_luk Using CNS From line 160
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           8     SINGLE EQUATIONS            9
+BLOCKS OF VARIABLES           7     SINGLE VARIABLES            9
+NON ZERO ELEMENTS            26     NON LINEAR N-Z             14
+CODE LENGTH                  43     CONSTANT POOL              20
+SINGLE =E|X= EQUS             9     SINGLE UNFIXED VARS         9
+
+
+GENERATION TIME      =        0.000 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 11
+Lille åben økonomi
+Solution Report     SOLVE HO_luk Using CNS From line 160
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   HO_luk              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  160
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      16 Solved
+
+ RESOURCE USAGE, LIMIT          0.015 10000000000.000
+ ITERATION COUNT, LIMIT         3    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Warning **  The value of LFITER is out of range.
+                LFITER is decreased from 2147483647 to 1000000000.
+ 
+                   Pre-triangular equations:   5
+                   Post-triangular equations:  1
+ 
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.003 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 12
+Lille åben økonomi
+E x e c u t i o n
+
+
+----    181 PARAMETER output3  
+
+       shock1_HO
+
+X        220.000
+c        880.000
+w          1.000
+p          1.000
+Pi         1.000
+wPi        1.000
+wp         1.000
+Y       1100.000
+L       1100.000
+Cf       220.000
+pfCf     220.000
+pX       220.000
+N       1100.000
+wN      1100.000
+A          1.000
+phi      200.000
+EV       100.000
+EVI      100.000
+
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 13
+Lille åben økonomi
+Model Statistics    SOLVE AR_luk Using CNS From line 184
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           8     SINGLE EQUATIONS            9
+BLOCKS OF VARIABLES           7     SINGLE VARIABLES            9
+NON ZERO ELEMENTS            27     NON LINEAR N-Z             16
+CODE LENGTH                  53     CONSTANT POOL              22
+SINGLE =E|X= EQUS             9     SINGLE UNFIXED VARS         9
+
+
+GENERATION TIME      =        0.016 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 14
+Lille åben økonomi
+Solution Report     SOLVE AR_luk Using CNS From line 184
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   AR_luk              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  184
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      16 Solved
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT        12    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Warning **  The value of LFITER is out of range.
+                LFITER is decreased from 2147483647 to 1000000000.
+ 
+                   Pre-triangular equations:   3
+                   Post-triangular equations:  0
+ 
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.002 seconds
+   of which: Function evaluations             0.001 = 50.0%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+                             4  PROJECTED
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 15
+Lille åben økonomi
+E x e c u t i o n
+
+
+----    205 PARAMETER output4  
+
+       shock1_AR
+
+X        221.829
+c        878.171
+w          0.979
+p          0.979
+Pi         0.984
+wPi        0.996
+wp         1.000
+Y       1100.000
+L       1100.000
+Cf       217.280
+pfCf     217.280
+pX       217.280
+N       1100.000
+wN      1077.445
+A          1.000
+phi      200.000
+EV        95.433
+EVI       77.445
+EVP       17.988
+
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 16
+Lille åben økonomi
+Model Statistics    SOLVE HO_luk Using CNS From line 211
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           8     SINGLE EQUATIONS            9
+BLOCKS OF VARIABLES           7     SINGLE VARIABLES            9
+NON ZERO ELEMENTS            26     NON LINEAR N-Z             14
+CODE LENGTH                  43     CONSTANT POOL              20
+SINGLE =E|X= EQUS             9     SINGLE UNFIXED VARS         9
+
+
+GENERATION TIME      =        0.000 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 17
+Lille åben økonomi
+Solution Report     SOLVE HO_luk Using CNS From line 211
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   HO_luk              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  211
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      16 Solved
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT         7    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Warning **  The value of LFITER is out of range.
+                LFITER is decreased from 2147483647 to 1000000000.
+ 
+                   Pre-triangular equations:   5
+                   Post-triangular equations:  1
+ 
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.001 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+                             1  PROJECTED
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 18
+Lille åben økonomi
+E x e c u t i o n
+
+
+----    232 PARAMETER output5  
+
+       shock2_HO
+
+X        220.000
+c        880.000
+w          1.100
+p          1.000
+Pi         1.000
+wPi        1.100
+wp         1.100
+Y       1100.000
+L       1000.000
+Cf       220.000
+pfCf     220.000
+pX       220.000
+N       1000.000
+wN      1100.000
+A          1.100
+phi      200.000
+EV       100.000
+EVI      100.000
+EVP  8.025817E-8
+
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 19
+Lille åben økonomi
+Model Statistics    SOLVE AR_luk Using CNS From line 234
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           8     SINGLE EQUATIONS            9
+BLOCKS OF VARIABLES           7     SINGLE VARIABLES            9
+NON ZERO ELEMENTS            27     NON LINEAR N-Z             16
+CODE LENGTH                  53     CONSTANT POOL              22
+SINGLE =E|X= EQUS             9     SINGLE UNFIXED VARS         9
+
+
+GENERATION TIME      =        0.000 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 20
+Lille åben økonomi
+Solution Report     SOLVE AR_luk Using CNS From line 234
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   AR_luk              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  234
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      16 Solved
+
+ RESOURCE USAGE, LIMIT          0.015 10000000000.000
+ ITERATION COUNT, LIMIT        12    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Warning **  The value of LFITER is out of range.
+                LFITER is decreased from 2147483647 to 1000000000.
+ 
+                   Pre-triangular equations:   3
+                   Post-triangular equations:  0
+ 
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.002 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+                             4  PROJECTED
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:55:13 Page 21
+Lille åben økonomi
+E x e c u t i o n
+
+
+----    255 PARAMETER output6  
+
+       shock2_AR
+
+X        221.829
+c        878.171
+w          1.077
+p          0.979
+Pi         0.984
+wPi        1.095
+wp         1.100
+Y       1100.000
+L       1000.000
+Cf       217.280
+pfCf     217.280
+pX       217.280
+N       1000.000
+wN      1077.445
+A          1.100
+phi      200.000
+EV        95.433
+EVI       77.445
+EVP       17.988
+
+
+
+EXECUTION TIME       =        6.719 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+
+
+USER: Course License                                 S210810|0002AO-GEN
+      University of Copenhagen, Department of Economics         DCE1507
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\Hjemmeopgave_1_solve.gms
+Output     C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\Hjemmeopgave_1_solve.lst

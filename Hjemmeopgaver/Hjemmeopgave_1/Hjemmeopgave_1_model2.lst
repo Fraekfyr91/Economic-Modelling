@@ -1,0 +1,79 @@
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:08:56 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   1   
+   2  *--------------------------------
+   3  set j /1, 2/;
+   4  set u /f, c/;
+   5   
+   6  *Parametre defineres
+   7  parameter
+   8  gamma(u) vægte
+   9  N(j) befolkning
+  10  Ey produktionselasticitet
+  11  Ec forbrugselasticitet
+  12  phi udenlandsk efterspørgsel
+  13  Ex eksportelasticitet
+  14  my(j) vægte
+  15  rho(j) arbejdsmarkedsvægte
+  16  w0(j) basisløn
+  17  N0(j) basisbefolkning
+  18  rho0(j) basisbefolkning
+  19  Pi0 basis prisindeks;
+  20   
+  21  variables
+  22  L(j) arbejdskraft
+  23  Y produktion
+  24  p(u) pris
+  25  w(j) løn
+  26  C(u) forbrug
+  27  Pi prisindeks
+  28  X eksport;
+  29   
+  30  equations
+  31  E2_1(j) arbejdskraft
+  32  E2_2 nul-profit
+  33  E2_3(j) arbejdsmarked ligevægt
+  34  E2_4 varemarkedet ligevægt
+  35  E2_5(u) forbrug
+  36  E2_6 budgetrestriktion
+  37  E2_7 prisniveau
+  38  E2_8 hekscher-ohlin
+  39  E2_9 armington;
+  40   
+  41  * Opstiller ligningene og definerer modellen
+  42   
+  43  E2_1(j).. L(j) =e= my(j)*(w(j)/p('c'))**(-Ey)*Y;
+  44  E2_2.. p('c')*Y =e= sum(j, w(j)*L(j));
+  45  E2_3(j).. L(j) =e= rho(j)*N(j);
+  46  E2_4.. Y =e= C('c')+X;
+  47  E2_5(u).. C(u) =e= gamma(u)*(p(u)/Pi)**(-Ec)*(sum(j, w(j)*rho(j)*N(j))/Pi);
+  48  E2_6.. sum(j, w(j)*rho(j)*N(j)) =e= sum(u, p(u)*C(u));
+  49  E2_7.. p('f') =e= 1;
+  50  E2_8.. p('c') =e= p('f');
+  51  E2_9.. X =e= phi*(p('c')/p('f'))**(-Ex);
+  52   
+  53  model HO_luk /E2_1, E2_2, E2_3, E2_4, E2_5, E2_6, E2_7, E2_8/;
+  54  model AR_luk /E2_1, E2_2, E2_3, E2_4, E2_5, E2_6, E2_7, E2_9/;
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 11:08:56 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+EXECUTION TIME       =        0.000 SECONDS      3 MB  36.2.0 r433180e WEX-WEI
+
+
+USER: Course License                                 S210810|0002AO-GEN
+      University of Copenhagen, Department of Economics         DCE1507
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\Hjemmeopgave_1_model2.gms
+Output     C:\Users\45238\Desktop\OEM\Hjemmeopgaver\Hjemmeopgave_1\Hjemmeopgave_1_model2.lst
