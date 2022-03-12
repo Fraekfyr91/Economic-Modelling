@@ -1,0 +1,56 @@
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/12/22 13:26:55 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   1  *-----------------------------------------------------
+   2  * Opgavesæt 4.3
+   3  * Keynes-Ramsey forbruger
+   4  *-----------------------------------------------------
+   5  *reset t
+   7  *setter t til 50 perioder
+   8  set t /t0 * t50/;
+   9  *Definerer parametre og variable
+  10  parameter
+  11  rho
+  12  eta
+  13  r(t);
+  14   
+  15  variables
+  16  C(t)
+  17  B(t)
+  18  Y(t)
+  19  p(t);
+  20   
+  21  *definerer ligninger og sætter modellen op
+  22  equations
+  23  E_1(t)
+  24  E_2(t)
+  25  E_2term;
+  26   
+  27  E_1(t) $ (ord(t) gt 1 and ord(t) lt card(t)).. C(t+1) =e= ((1+r(t+1))/(1+eta))**(1/rho)*C(t);
+  28  E_2(t) $ (ord(t) gt 1).. B(t) =e= (1+r(t))*B(t-1)+Y(t)-p(t)*C(t);
+  29  E_2term.. B('t50') =e= B('t49');
+  30   
+  31  model model3 / E_1, E_2, E_2term/;
+  32   
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/12/22 13:26:55 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+EXECUTION TIME       =        0.000 SECONDS      3 MB  36.2.0 r433180e WEX-WEI
+
+
+USER: Course License                                 S210810|0002AO-GEN
+      University of Copenhagen, Department of Economics         DCE1507
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\Opgavesaet_4_3_model.gms
+Output     C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\Opgavesaet_4_3_model.lst

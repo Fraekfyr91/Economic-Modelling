@@ -1,0 +1,339 @@
+--- Job Opgavesaet_3_1_solve.gms Start 01/13/22 09:41:34 36.2.0 r433180e WEX-WEI x86 64bit/MS Windows
+--- Applying:
+    C:\GAMS\36\gmsprmNT.txt
+--- GAMS Parameters defined
+    Input C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\Opgavesaet_3_1_solve.gms
+    PageSize 0
+    ScrDir C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\225a\
+    SysDir C:\GAMS\36\
+    LogOption 3
+    ErrMsg 1
+    ErrorLog 99
+    IDE 1
+    LstTitleLeftAligned 1
+Licensee: Course License                                 S210810|0002AO-GEN
+          University of Copenhagen, Department of Economics         DCE1507
+          C:\Users\45238\Documents\GAMS\gamslice.txt
+          License Admin: Kim Petersen, kp@econ.ku.dk                       
+          Course license for use within the course and related course work
+Processor information: 1 socket(s), 4 core(s), and 8 thread(s) available
+GAMS 36.2.0   Copyright (C) 1987-2021 GAMS Development. All rights reserved
+--- Starting compilation
+--- Opgavesaet_3_1_solve.gms(7) 2 Mb
+--- . Opgavesaet_3_model.gms(84) 3 Mb
+--- Opgavesaet_3_1_solve.gms(10) 3 Mb
+--- . data_31.gms(27) 3 Mb
+--- Opgavesaet_3_1_solve.gms(231) 3 Mb
+--- Starting execution: elapsed 0:00:00.032
+--- Opgavesaet_3_1_solve.gms(137) 4 Mb
+--- Generating CNS model model1
+--- Opgavesaet_3_1_solve.gms(141) 6 Mb
+---   7 rows  11 columns  27 non-zeroes
+---   42 nl-code  19 nl-non-zeroes
+--- Opgavesaet_3_1_solve.gms(141) 4 Mb
+--- Executing CONOPT (Solvelink=2): elapsed 0:00:00.034
+
+CONOPT 3         36.2.0 r433180e Released Sep 03, 2021 WEI x86 64bit/MS Window
+
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+   Iter Phase Ninf   Infeasibility   RGmax    NSB   Step InItr MX OK
+      0   0        3.0000000000E+03 (Input point)
+ 
+                   Pre-triangular equations:   3
+                   Post-triangular equations:  1
+ 
+      1   0        0.0000000000E+00 (After pre-processing)
+      2   0        0.0000000000E+00 (After scaling)
+      2            0.0000000000E+00
+ 
+ ** Feasible solution to a square system.
+ 
+--- Reading solution for model model1
+--- Executing after solve: elapsed 0:00:00.092
+--- Opgavesaet_3_1_solve.gms(169) 4 Mb
+--- Generating CNS model model1
+--- Opgavesaet_3_1_solve.gms(171) 6 Mb
+---   7 rows  11 columns  27 non-zeroes
+---   42 nl-code  19 nl-non-zeroes
+--- Opgavesaet_3_1_solve.gms(171) 4 Mb
+--- Executing CONOPT (Solvelink=2): elapsed 0:00:00.095
+
+CONOPT 3         36.2.0 r433180e Released Sep 03, 2021 WEI x86 64bit/MS Window
+
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+   Iter Phase Ninf   Infeasibility   RGmax    NSB   Step InItr MX OK
+      0   0        1.0000000000E+02 (Input point)
+ 
+                   Pre-triangular equations:   3
+                   Post-triangular equations:  1
+ 
+      1   0        1.0000000000E+02 (After pre-processing)
+      2   0        1.3671875000E-01 (After scaling)
+      3            0.0000000000E+00
+ 
+ ** Feasible solution to a square system.
+ 
+--- Reading solution for model model1
+--- Executing after solve: elapsed 0:00:00.152
+--- Opgavesaet_3_1_solve.gms(194) 4 Mb
+--- Generating CNS model model1
+--- Opgavesaet_3_1_solve.gms(196) 6 Mb
+---   7 rows  11 columns  27 non-zeroes
+---   42 nl-code  19 nl-non-zeroes
+--- Opgavesaet_3_1_solve.gms(196) 4 Mb
+--- Executing CONOPT (Solvelink=2): elapsed 0:00:00.154
+
+CONOPT 3         36.2.0 r433180e Released Sep 03, 2021 WEI x86 64bit/MS Window
+
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+   Iter Phase Ninf   Infeasibility   RGmax    NSB   Step InItr MX OK
+      0   0        2.0000000000E+01 (Input point)
+ 
+                   Pre-triangular equations:   3
+                   Post-triangular equations:  1
+ 
+      1   0        2.0000000000E+01 (After pre-processing)
+      2   0        1.9531250000E-02 (After scaling)
+      8            1.3348186445E-10
+ 
+ ** Feasible solution to a square system.
+ 
+--- Reading solution for model model1
+--- Executing after solve: elapsed 0:00:00.202
+--- Opgavesaet_3_1_solve.gms(218) 4 Mb
+--- Generating CNS model model1
+--- Opgavesaet_3_1_solve.gms(219) 6 Mb
+---   7 rows  11 columns  27 non-zeroes
+---   42 nl-code  19 nl-non-zeroes
+--- Opgavesaet_3_1_solve.gms(219) 4 Mb
+--- Executing CONOPT (Solvelink=2): elapsed 0:00:00.204
+
+CONOPT 3         36.2.0 r433180e Released Sep 03, 2021 WEI x86 64bit/MS Window
+
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+   Iter Phase Ninf   Infeasibility   RGmax    NSB   Step InItr MX OK
+      0   0        1.0047015360E+02 (Input point)
+ 
+                   Pre-triangular equations:   3
+                   Post-triangular equations:  1
+ 
+      1   0        1.0047015332E+02 (After pre-processing)
+      2   0        1.1764663397E-01 (After scaling)
+     10   0     0  4.5621352794E-06               1.0E+00      F  T
+     18            3.7668290709E-10
+ 
+ ** Feasible solution to a square system.
+ 
+--- Reading solution for model model1
+--- Executing after solve: elapsed 0:00:00.252
+--- Opgavesaet_3_1_solve.gms(237) 4 Mb
+--- Generating CNS model model1
+--- Opgavesaet_3_1_solve.gms(240) 6 Mb
+---   7 rows  11 columns  27 non-zeroes
+---   42 nl-code  19 nl-non-zeroes
+--- Opgavesaet_3_1_solve.gms(240) 4 Mb
+--- Executing CONOPT (Solvelink=2): elapsed 0:00:00.256
+
+CONOPT 3         36.2.0 r433180e Released Sep 03, 2021 WEI x86 64bit/MS Window
+
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+   Iter Phase Ninf   Infeasibility   RGmax    NSB   Step InItr MX OK
+      0   0        1.7310862869E+02 (Input point)
+ 
+                   Pre-triangular equations:   3
+                   Post-triangular equations:  1
+ 
+      1   0        9.7182134412E+01 (After pre-processing)
+      2   0        2.1319002238E-01 (After scaling)
+      9            2.9402447144E-10
+ 
+ ** Feasible solution to a square system.
+ 
+--- Reading solution for model model1
+--- Executing after solve: elapsed 0:00:00.300
+--- Opgavesaet_3_1_solve.gms(264) 4 Mb
+--- Generating CNS model model1
+--- Opgavesaet_3_1_solve.gms(266) 6 Mb
+---   7 rows  11 columns  27 non-zeroes
+---   42 nl-code  19 nl-non-zeroes
+--- Opgavesaet_3_1_solve.gms(266) 4 Mb
+--- Executing CONOPT (Solvelink=2): elapsed 0:00:00.302
+
+CONOPT 3         36.2.0 r433180e Released Sep 03, 2021 WEI x86 64bit/MS Window
+
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+   Iter Phase Ninf   Infeasibility   RGmax    NSB   Step InItr MX OK
+      0   0        1.0000000005E+02 (Input point)
+ 
+                   Pre-triangular equations:   3
+                   Post-triangular equations:  1
+ 
+      1   0        9.9999999984E+01 (After pre-processing)
+      2   0        2.5390624977E-01 (After scaling)
+      3            1.5436540934E-11
+ 
+ ** Feasible solution to a square system.
+ 
+--- Reading solution for model model1
+--- Executing after solve: elapsed 0:00:00.338
+--- Opgavesaet_3_1_solve.gms(289) 4 Mb
+--- Generating CNS model model1
+--- Opgavesaet_3_1_solve.gms(291) 6 Mb
+---   7 rows  11 columns  27 non-zeroes
+---   42 nl-code  19 nl-non-zeroes
+--- Opgavesaet_3_1_solve.gms(291) 4 Mb
+--- Executing CONOPT (Solvelink=2): elapsed 0:00:00.340
+
+CONOPT 3         36.2.0 r433180e Released Sep 03, 2021 WEI x86 64bit/MS Window
+
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+   Iter Phase Ninf   Infeasibility   RGmax    NSB   Step InItr MX OK
+      0   0        2.0000000004E+01 (Input point)
+ 
+                   Pre-triangular equations:   3
+                   Post-triangular equations:  1
+ 
+      1   0        2.0000000001E+01 (After pre-processing)
+      2   0        8.7890624992E-02 (After scaling)
+     10   0     0  2.0654480348E-09               1.0E+00      F  T
+     11            2.4886337435E-10
+ 
+ ** Feasible solution to a square system.
+ 
+--- Reading solution for model model1
+--- Executing after solve: elapsed 0:00:00.378
+--- Opgavesaet_3_1_solve.gms(313) 4 Mb
+--- Generating CNS model model1
+--- Opgavesaet_3_1_solve.gms(314) 6 Mb
+---   7 rows  11 columns  27 non-zeroes
+---   42 nl-code  19 nl-non-zeroes
+--- Opgavesaet_3_1_solve.gms(314) 4 Mb
+--- Executing CONOPT (Solvelink=2): elapsed 0:00:00.381
+
+CONOPT 3         36.2.0 r433180e Released Sep 03, 2021 WEI x86 64bit/MS Window
+
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+   Iter Phase Ninf   Infeasibility   RGmax    NSB   Step InItr MX OK
+      0   0        1.0820006378E+02 (Input point)
+ 
+                   Pre-triangular equations:   3
+                   Post-triangular equations:  1
+ 
+      1   0        1.0820006372E+02 (After pre-processing)
+      2   0        4.8652349953E-01 (After scaling)
+     10   0     0  1.2275348084E-04               1.0E+00      F  T
+     20   0     0  6.4612308837E-09               1.0E+00      F  T
+     23            3.3626346152E-10
+ 
+ ** Feasible solution to a square system.
+ 
+--- Reading solution for model model1
+--- Executing after solve: elapsed 0:00:00.439
+--- Opgavesaet_3_1_solve.gms(331) 4 Mb
+--- GDX File (execute_unload) C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model1.gdx
+--- Opgavesaet_3_1_solve.gms(335) 4 Mb
+
+GDXXRW           36.2.0 r433180e Released Sep 03, 2021 WEI x86 64bit/MS Window
+Input file : C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model1.gdx
+Output file: C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model1.xlsx
+Total time = 859 Ms
+--- Opgavesaet_3_1_solve.gms(336) 4 Mb
+
+GDXXRW           36.2.0 r433180e Released Sep 03, 2021 WEI x86 64bit/MS Window
+Input file : C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model1.gdx
+Output file: C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model1.xlsx
+Total time = 859 Ms
+--- Opgavesaet_3_1_solve.gms(337) 4 Mb
+
+GDXXRW           36.2.0 r433180e Released Sep 03, 2021 WEI x86 64bit/MS Window
+Input file : C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model1.gdx
+Output file: C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model1.xlsx
+Total time = 812 Ms
+--- Opgavesaet_3_1_solve.gms(338) 4 Mb
+
+GDXXRW           36.2.0 r433180e Released Sep 03, 2021 WEI x86 64bit/MS Window
+Input file : C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model1.gdx
+Output file: C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model1.xlsx
+Total time = 860 Ms
+--- Opgavesaet_3_1_solve.gms(339) 4 Mb
+
+GDXXRW           36.2.0 r433180e Released Sep 03, 2021 WEI x86 64bit/MS Window
+Input file : C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model1.gdx
+Output file: C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model1.xlsx
+Total time = 781 Ms
+--- Opgavesaet_3_1_solve.gms(340) 4 Mb
+
+GDXXRW           36.2.0 r433180e Released Sep 03, 2021 WEI x86 64bit/MS Window
+Input file : C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model1.gdx
+Output file: C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model1.xlsx
+Total time = 843 Ms
+--- Opgavesaet_3_1_solve.gms(341) 4 Mb
+
+GDXXRW           36.2.0 r433180e Released Sep 03, 2021 WEI x86 64bit/MS Window
+Input file : C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model1.gdx
+Output file: C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model1.xlsx
+Total time = 766 Ms
+--- Opgavesaet_3_1_solve.gms(342) 4 Mb
+
+GDXXRW           36.2.0 r433180e Released Sep 03, 2021 WEI x86 64bit/MS Window
+Input file : C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model1.gdx
+Output file: C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model1.xlsx
+Total time = 781 Ms
+*** Status: Normal completion
+--- Job Opgavesaet_3_1_solve.gms Stop 01/13/22 09:41:41 elapsed 0:00:07.401

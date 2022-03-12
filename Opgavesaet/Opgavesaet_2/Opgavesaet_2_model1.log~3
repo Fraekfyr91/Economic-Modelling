@@ -1,0 +1,38 @@
+
+--- Job Opgavesaet_2_model1.gms Start 01/12/22 09:31:07 36.2.0 r433180e WEX-WEI x86 64bit/MS Windows
+--- Applying:
+    C:\GAMS\36\gmsprmNT.txt
+--- GAMS Parameters defined
+    Input C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\Opgavesaet_2_model1.gms
+    PageSize 0
+    ScrDir C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\225a\
+    SysDir C:\GAMS\36\
+    LogOption 3
+    ErrMsg 1
+    ErrorLog 99
+    IDE 1
+    LstTitleLeftAligned 1
+Licensee: Course License                                 S210810|0002AO-GEN
+          University of Copenhagen, Department of Economics         DCE1507
+          C:\Users\45238\Documents\GAMS\gamslice.txt
+          License Admin: Kim Petersen, kp@econ.ku.dk                       
+          Course license for use within the course and related course work
+Processor information: 1 socket(s), 4 core(s), and 8 thread(s) available
+GAMS 36.2.0   Copyright (C) 1987-2021 GAMS Development. All rights reserved
+--- Starting compilation
+--- Opgavesaet_2_model1.gms(2) 2 Mb 1 Error
+*** Error 280 in C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\Opgavesaet_2_model1.gms
+    Include/insert filename already in use
+       $onrecurse will allow recursive includes
+--- Opgavesaet_2_model1.gms(33) 2 Mb 2 Errors
+*** Error 257 in C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\Opgavesaet_2_model1.gms
+    Solve statement not checked because of previous errors
+--- Opgavesaet_2_model1.gms(57) 3 Mb 3 Errors
+*** Error 257 in C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\Opgavesaet_2_model1.gms
+    Solve statement not checked because of previous errors
+--- Opgavesaet_2_model1.gms(79) 3 Mb 4 Errors
+*** Error 257 in C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\Opgavesaet_2_model1.gms
+    Solve statement not checked because of previous errors
+--- Opgavesaet_2_model1.gms(88) 3 Mb 4 Errors
+*** Status: Compilation error(s)
+--- Job Opgavesaet_2_model1.gms Stop 01/12/22 09:31:07 elapsed 0:00:00.004

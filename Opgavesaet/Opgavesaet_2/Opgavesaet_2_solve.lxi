@@ -1,0 +1,14 @@
+B 3 C o m p i l a t i o n
+B 118 Include File Summary
+B 130 Model Statistics    SOLVE model1 Using CNS From line 43
+B 145 Solution Report     SOLVE model1 Using CNS From line 43
+B 189 E x e c u t i o n
+I 189 output
+B 206 Model Statistics    SOLVE model1 Using CNS From line 67
+B 221 Solution Report     SOLVE model1 Using CNS From line 67
+B 266 E x e c u t i o n
+I 266 output2
+B 283 Model Statistics    SOLVE model1 Using CNS From line 90
+B 298 Solution Report     SOLVE model1 Using CNS From line 90
+B 342 E x e c u t i o n
+I 342 output3

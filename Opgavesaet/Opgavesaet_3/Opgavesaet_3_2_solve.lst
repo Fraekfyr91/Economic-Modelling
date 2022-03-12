@@ -1,0 +1,416 @@
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:54 Page 1
+M�ling af besk�ftigelse i hovede, Opgave 3.2
+C o m p i l a t i o n
+
+
+   2   
+   3  *suppressing output
+   5  option limcol =0, limrow=0;
+   6  option solprint=off;
+   7   
+   8  *indlæs modellen
+INCLUDE    C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\Opgavesaet_3_model.gms
+  10  * Opgavsæt 3.1
+  11  *Opgave 3.1.1 Verdens næstsimpleste ligevægtsmodel
+  12  * Setter til type 1 og 2
+  13  set j "type af arbejdskraft" /1,2/;
+  14   
+  15  * Parameteren E defineres
+  16  parameter E " Elasticiteten";
+  17   
+  18  *definer variable
+  19  variables
+  20  *Endogene
+  21  *--------------------------------------
+  22  Y "Output (Endogen)"
+  23  L(j) "Arbejdskraft (Endogen)"
+  24  C "Vareforbrug (Endogen)"
+  25  w(j) "Løn for j type uddannet (Endogen)"
+  26  p "Pris (Endogen)"
+  27  * Eksogene
+  28  *--------------------------------------
+  29  N(j) "Befolkningen (Eksogen)"
+  30  mu(j) "efterspørgsels parameter for type j (eksogen)"
+  31  *************
+  32  *Til model 2*
+  33  *************
+  34  rho(j) "Produktivitet  (Eksogen)";
+  35  ;
+  36  * Ligningerne defineres
+  37  Equations
+  38  E_L(j)
+  39  E_Y
+  40  E_N(j)
+  41  E_C
+  42  E_P
+  43  ;
+  44   
+  45  * 3.1.2 Opstil ligningene og definer modellen
+  46  *"Efterspørgsel efter arbejdskraftstype j"
+  47  E_L(j).. L(j) =e= mu(j)*(w(j)/p)**(-E)*Y;
+  48  *"Nul-profit betingelse"
+  49  E_Y.. p*Y =e= sum(j, w(j)*L(j));
+  50  *"Ligevægt på arbejdsmarkedet for type j"
+  51  E_N(j).. L(j)=e= N(j);
+  52  *"Privat forbrug"
+  53  E_C.. C =e= 1/p*sum(j,w(j)*N(j));
+  54  *" pris"
+  55  E_P.. p =e= 1
+  56   
+  57  *Opstiller modellen
+  58  Model model1/
+  59  E_L
+  60  E_Y
+  61  E_N
+  62  E_C
+  63  E_P/;
+  64   
+  65  ************
+  66  *Model 2
+  67  ************
+  68   
+  69  Equations
+  70  E_Y2(j)
+  71  E_W2
+  72  E_L2(j)
+  73  E_C2
+  74  E_p2;
+  75   
+  76   
+  77  *------------------------------------------------------------------------*
+  78  * Opgave 3.2.2
+  79  * Opstil ligningerne og definer modellen
+  80  *------------------------------------------------------------------------*
+  81   
+  82  E_Y2(j)..     L(j) =e= mu(j) * (w(j)/p)**(-E) * Y;
+  83  E_W2..        p*Y  =e= sum(j,w(j)*L(j));
+  84  E_L2(j)..     L(j) =e= rho(j)*N(j);
+  85  E_C2..        C    =e= sum(j,rho(j)*w(j)*N(j)) / p;
+  86  E_p2..        p    =e= 1;
+  87   
+  88  model model2/
+  89  E_Y2
+  90  E_W2
+  91  E_L2
+  92  E_C2
+  93  E_p2/;
+  94   
+  95   
+  96  *------------------------------------------------------------------------*
+  97  * Opgave 3.2.3
+  98  * Indl�sning af nationalregnskabet og befolkning
+  99  *------------------------------------------------------------------------*
+ 100   
+INCLUDE    C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\data_32.gms
+ 102   
+ 103  *--------------------------------------------*
+ 104  * Nationalregnskabet til opgave 3.1
+ 105  * NR = pY = pC = w(1)*L(1) + w(2)*L(2) = 1000
+ 106  *--------------------------------------------*
+ 107   
+ 108  parameter NR, lonsum(j);
+ 109  NR          = 1000;
+ 110  lonsum('1') = 800;
+ 111  lonsum('2') = 200;
+ 112   
+ 113   
+ 114  *--------------------------------------------*
+ 115  * Befolkning og BNP
+ 116  *--------------------------------------------*
+ 117   
+ 118  parameter
+ 119  bef(j) "arbejdsstyrke med uddannelsestype j"
+ 120  ;
+ 121  bef('1') = 3200;
+ 122  bef('2') = 500;
+ 123   
+ 124   
+ 125   
+ 126  *--------------------------------------------*
+ 127  * Nationalregnskabet til opgave 3.1
+ 128  * NR = pY = pC = w(1)*L(1) + w(2)*L(2) = 1000
+ 129  *--------------------------------------------*
+ 130   
+ 131  parameter NR, lonsum(j);
+ 132  NR          = 1000;
+ 133  lonsum('1') = 800;
+ 134  lonsum('2') = 200;
+ 135   
+ 136   
+ 137  *--------------------------------------------*
+ 138  * Befolkning og BNP
+ 139  *--------------------------------------------*
+ 140   
+ 141  parameter
+ 142  bef(j) "arbejdsstyrke med uddannelsestype j"
+ 143  ;
+ 144  bef('1') = 3200;
+ 145  bef('2') = 500;
+ 146   
+ 147  E=10000000000000;
+ 148  *------------------------------------------------------------------------*
+ 149  * Opgave 3.2.4
+ 150  * Initialisering og kalibrering
+ 151  *------------------------------------------------------------------------*
+ 152  * Antagelse
+ 153  w.l(j) = 1;
+ 154  *Initialisering
+ 155  p.l = 1;
+ 156  L.l(j)  = lonsum(j) / w.l(j);
+ 157  C.l     = NR / p.l;
+ 158  Y.l     = NR / p.l;
+ 159   
+ 160  * Kalibrering
+ 161  * Befolkningen er givet i data.
+ 162  N.fx(j) = bef(j);
+ 163  * Rho kan findes ud fra ligev�gten p� arbejdsmarkdet.
+ 164  rho.fx(j)  = L.l(j)/N.l(j);
+ 165  * CES fordelings parameterne
+ 166  mu.fx(j) = L.l(j) / Y.l *(w.l(j)/P.l)**(-E);
+ 167   
+ 168  *------------------------------------------------------------------------*
+ 169  * Opgave 3.2.4
+ 170  * 0-st�d
+ 171  * Kontroler at modellene rammer sig selv
+ 172  *------------------------------------------------------------------------*
+ 173   
+ 174  solve model2 using cns
+ 175   
+ 176  set objekter /Y, w1, w2, L, L1, L2, C, p,w_rho_N, N, N1, N2, my1, my2, rho1, rho2 /;
+ 177  set eksperiment /baseline, shock1 /;
+ 178  parameter output(objekter,eksperiment);
+ 179  output('Y','baseline')  = Y.l;
+ 180  output('w1','baseline') = w.l('1');
+ 181  output('w2','baseline') = w.l('2');
+ 182  output('L','baseline')    = L.l('1')+L.l('2');
+ 183  output('L1','baseline') = L.l('1');
+ 184  output('L2','baseline') = L.l('2');
+ 185  output('C','baseline')  = C.l;
+ 186  output('p','baseline')  = P.l;
+ 187  output('w_rho_N', 'baseline') = sum(j,w.l(j)*rho.l(j)*N.l(j));
+ 188  output('N','baseline')    = N.l('1')+N.l('2');
+ 189  output('N1','baseline') = N.l('1');
+ 190  output('N2','baseline') = N.l('2');
+ 191  output('MY1','baseline')= Mu.l('1');
+ 192  output('MY2','baseline')= Mu.l('2');
+ 193  output('RHO1','baseline')= rho.l('1');
+ 194  output('RHO2','baseline')= rho.l('2');
+ 195  display output;
+ 196   
+ 197  *------------------------------------------------------------------------*
+ 198  * Opgave 3.3.5
+ 199  *Marginaleksperimenter , 3 befolknings-/indvandringsst�d
+ 200  *        Analyser effekten af, at 10.000 lavtuddannede (type 1) bliver
+ 201  *        h�jtuddannede (type 2). Se blandt andet p� effekten p�
+ 202  *        produktionen og l�nniveauerne for hhv. lavt- og h�jtuddannede.
+ 203  *------------------------------------------------------------------------*
+ 204   
+ 205  * St�d 1: Lad hele befolkningen  stige med 5 %.
+ 206  *-----------------------------------------------*
+ 207   
+ 208  N.fx('1') = N.l('1') -100 ;
+ 209  N.fx('2') = N.l('2') +100;
+ 210   
+ 211  solve model2 using cns;
+ 212  parameter output2(objekter,eksperiment);
+ 213   
+ 214  output2('Y','Shock1')  = Y.l      ;
+ 215  output2('w1','Shock1') = w.l('1') ;
+ 216  output2('w2','Shock1') = w.l('2')  ;
+ 217  output2('L','Shock1')  = (L.l('1')+L.l('2')) ;
+ 218  output2('L1','Shock1') = L.l('1')  ;
+ 219  output2('L2','Shock1') = L.l('2')  ;
+ 220  output2('C','Shock1')  = C.l      ;
+ 221  output2('p','Shock1')  = P.l      ;
+ 222  output2('w_rho_N', 'shock1') = sum(j,w.l(j)*rho.l(j)*N.l(j));
+ 223  output2('N','Shock1')  = (N.l('1')+N.l('2')) ;
+ 224  output2('N1','Shock1') = N.l('1') ;
+ 225  output2('N2','Shock1') = N.l('2')  ;
+ 226  output2('MY1','Shock1')= Mu.l('1') ;
+ 227  output2('MY2','Shock1')= Mu.l('2') ;
+ 228  output2('RHO1','Shock1')= rho.l('1');
+ 229  output2('RHO2','Shock1')= rho.l('2');
+ 230   
+ 231   
+ 232  * 3.1.7 Overfør til excel
+ 233  execute_unload "C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model2.gdx", output,output2;
+ 234   
+ 235  *=== Now write to variable levels to Excel file from GDX
+ 236  *=== Since we do not specify a sheet, data is placed in first sheet
+ 237  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model2.gdx O=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model2.xlsx par= output rng=ARK_navn!A1';
+ 238  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model2.gdx O=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\solve_model2.xlsx par= output2 rng=ARK_navn2!A1';
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:54 Page 2
+M�ling af besk�ftigelse i hovede, Opgave 3.2
+Include File Summary
+
+
+   SEQ   GLOBAL TYPE      PARENT   LOCAL  FILENAME
+
+     1        1 INPUT          0       0  C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\Opgavesaet_3_2_solve.gms
+     2        9 INCLUDE        1       9  .C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\Opgavesaet_3_model.gms
+     3      101 INCLUDE        1      17  .C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\data_32.gms
+
+
+COMPILATION TIME     =        0.015 SECONDS      3 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:54 Page 3
+M�ling af besk�ftigelse i hovede, Opgave 3.2
+Model Statistics    SOLVE model2 Using CNS From line 176
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           5     SINGLE EQUATIONS            7
+BLOCKS OF VARIABLES           8     SINGLE VARIABLES           13
+NON ZERO ELEMENTS            31     NON LINEAR N-Z             25
+CODE LENGTH                  52     CONSTANT POOL              17
+SINGLE =E|X= EQUS             7     SINGLE UNFIXED VARS         7
+
+
+GENERATION TIME      =        0.000 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:54 Page 4
+M�ling af besk�ftigelse i hovede, Opgave 3.2
+Solution Report     SOLVE model2 Using CNS From line 176
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   model2              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  176
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      16 Solved
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT         2    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Warning **  The value of LFITER is out of range.
+                LFITER is decreased from 2147483647 to 1000000000.
+ 
+                   Pre-triangular equations:   3
+                   Post-triangular equations:  1
+ 
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.001 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:54 Page 5
+M�ling af besk�ftigelse i hovede, Opgave 3.2
+E x e c u t i o n
+
+
+----    195 PARAMETER output  
+
+           baseline
+
+Y          1000.000
+w1            1.000
+w2            1.000
+L          1000.000
+L1          800.000
+L2          200.000
+C          1000.000
+p             1.000
+w_rho_N    1000.000
+N          3700.000
+N1         3200.000
+N2          500.000
+my1           0.800
+my2           0.200
+rho1          0.250
+rho2          0.400
+
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:54 Page 6
+M�ling af besk�ftigelse i hovede, Opgave 3.2
+Model Statistics    SOLVE model2 Using CNS From line 211
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           5     SINGLE EQUATIONS            7
+BLOCKS OF VARIABLES           8     SINGLE VARIABLES           13
+NON ZERO ELEMENTS            31     NON LINEAR N-Z             25
+CODE LENGTH                  52     CONSTANT POOL              17
+SINGLE =E|X= EQUS             7     SINGLE UNFIXED VARS         7
+
+
+GENERATION TIME      =        0.000 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:54 Page 7
+M�ling af besk�ftigelse i hovede, Opgave 3.2
+Solution Report     SOLVE model2 Using CNS From line 211
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   model2              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  211
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      16 Solved
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT         5    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Warning **  The value of LFITER is out of range.
+                LFITER is decreased from 2147483647 to 1000000000.
+ 
+                   Pre-triangular equations:   3
+                   Post-triangular equations:  1
+ 
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.001 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+                             1  PROJECTED
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:54 Page 8
+M�ling af besk�ftigelse i hovede, Opgave 3.2
+E x e c u t i o n
+
+
+EXECUTION TIME       =        1.907 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+
+
+USER: Course License                                 S210810|0002AO-GEN
+      University of Copenhagen, Department of Economics         DCE1507
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\Opgavesaet_3_2_solve.gms
+Output     C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_3\Opgavesaet_3_2_solve.lst

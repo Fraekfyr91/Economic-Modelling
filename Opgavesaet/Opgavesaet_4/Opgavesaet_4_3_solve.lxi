@@ -1,0 +1,10 @@
+B 3 C o m p i l a t i o n
+B 91 Include File Summary
+B 103 Model Statistics    SOLVE model3 Using CNS From line 60
+B 118 Solution Report     SOLVE model3 Using CNS From line 60
+B 168 E x e c u t i o n
+I 168 base
+B 229 Model Statistics    SOLVE model3 Using CNS From line 71
+B 244 Solution Report     SOLVE model3 Using CNS From line 71
+B 294 E x e c u t i o n
+I 294 shock

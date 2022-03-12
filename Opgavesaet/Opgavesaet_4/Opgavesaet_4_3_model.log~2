@@ -1,0 +1,25 @@
+--- Job Opgavesaet_4_3_model.gms Start 01/12/22 13:22:38 36.2.0 r433180e WEX-WEI x86 64bit/MS Windows
+--- Applying:
+    C:\GAMS\36\gmsprmNT.txt
+--- GAMS Parameters defined
+    Input C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\Opgavesaet_4_3_model.gms
+    PageSize 0
+    ScrDir C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\225a\
+    SysDir C:\GAMS\36\
+    LogOption 3
+    ErrMsg 1
+    ErrorLog 99
+    IDE 1
+    LstTitleLeftAligned 1
+Licensee: Course License                                 S210810|0002AO-GEN
+          University of Copenhagen, Department of Economics         DCE1507
+          C:\Users\45238\Documents\GAMS\gamslice.txt
+          License Admin: Kim Petersen, kp@econ.ku.dk                       
+          Course license for use within the course and related course work
+Processor information: 1 socket(s), 4 core(s), and 8 thread(s) available
+GAMS 36.2.0   Copyright (C) 1987-2021 GAMS Development. All rights reserved
+--- Starting compilation
+--- Opgavesaet_4_3_model.gms(28) 3 Mb
+--- Starting execution: elapsed 0:00:00.010
+*** Status: Normal completion
+--- Job Opgavesaet_4_3_model.gms Stop 01/12/22 13:22:38 elapsed 0:00:00.010

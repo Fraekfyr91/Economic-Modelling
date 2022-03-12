@@ -1,0 +1,346 @@
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:11 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+INCLUDE    C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\Opgavesaet_2_model2.gms
+   2  *** Opgave 2
+   3  *** - Udvidelse af verdens simpleste ligevægts model
+   4   
+   5  *2.2.1 Indfør ligningen for A i verdenssimpleste ligevægtsmodel
+   6  variables  L, Y, A, w, N_bar, C, p, A0 ;
+   7  parameter theta 'Produktivitets vækst';
+   8  Equations E_L, P_Y, L_N, C_N, p_, E_A;
+   9  E_L.. L =e= Y/A;
+  10  P_Y.. p*Y =e= w*L;
+  11  L_N.. L =e= N_bar;
+  12  C_N.. C =e= (w/p)*N_bar;
+  13  p_.. p =e= 1;
+  14  E_A.. A =e= theta* Y+A0
+  15   
+  16  Model model2/
+  17  E_L
+  18  p_Y
+  19  L_N
+  20  C_N
+  21  p_
+  22  E_A/;
+  23   
+  24   
+  26  option limcol=0, limrow=0;
+  27  option solprint=off;
+  28   
+  29  * 2.2.2 Initialiser og kalibrer modellen
+  30   
+  31  parameter NR 'National Regnskabet';
+  32  NR =1000;
+  33  theta = 2/10000;
+  34   
+  35  w.L=1;
+  36  p.L=1;
+  37  Y.L = NR/p.L;
+  38  L.L = NR/w.L;
+  39  C.L = NR/p.L;
+  40  A.L =w.L/p.L;
+  41  N_bar.FX = L.L;
+  42  A0.FX = A.L - theta*Y.L
+  43   
+  44  *2.2.3 0-stødet
+  45  Solve model2 USING CNS;
+  46   
+  47  display Y.L, w.L, L.L, C.L, p.L, N_bar.L, A.L, A0.L;
+  48   
+  49  set objekter /Y, w, L, C, p, N_bar, A, A0/;
+  50  set eksperiment /baseline, shock1, shock2/;
+  51  parameter output(objekter,eksperiment);
+  52  output('Y','baseline')= Y.L;
+  53  output('w','baseline')= w.L;
+  54  output('L','baseline')= L.L;
+  55  output('C','baseline')= C.L;
+  56  output('P','baseline')= P.L;
+  57  output('N_bar','baseline')= N_bar.L;
+  58  output('A','baseline')= A.L;
+  59  output('A0','baseline')= A0.L;
+  60   
+  61  *---------------
+  62  *Stød til modelling
+  63  *-----------------
+  64   
+  65  A0.fx =A0.l*1.10;
+  66  Solve Model2 USING CNS;
+  67  parameter output2(objekter,eksperiment);
+  68  output2('Y','shock1')= Y.l;
+  69  output2('w','shock1')= w.l;
+  70  output2('L','shock1')= L.l;
+  71  output2('C','shock1')= C.l;
+  72  output2('p','shock1')= P.l;
+  73  output2('N_bar','shock1')= N_bar.l;
+  74  output2('A','shock1')= A.l;
+  75  output2('A0','shock1')= A0.l;
+  76   
+  77   
+  78  *_---------
+  79  *Stød 2
+  80  *-----------
+  81   
+  82  A0.fx =0.8;
+  83  N_bar.fx = N_bar.l*1.05;
+  84  Solve model2 USING CNS;
+  85  parameter output3(objekter,eksperiment);
+  86  output3('Y','shock2')= Y.l;
+  87  output3('w','shock2')= w.l;
+  88  output3('L','shock2')= L.l;
+  89  output3('C','shock2')= C.l;
+  90  output3('P','shock2')= P.l;
+  91  output3('N_bar','shock2')= N_bar.l;
+  92  output3('A','shock2')= A.l;
+  93  output3('A0','shock2')= A0.l;
+  94  display output;
+  95   
+  96   
+  97  *=== Export to Excel using GDX utilities
+  98   
+  99  *=== First unload to GDX file (occurs during execution phase)
+ 100  execute_unload "C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\solve_model2.gdx", output,output2, output3;
+ 101   
+ 102  *=== Now write to variable levels to Excel file from GDX
+ 103  *=== Since we do not specify a sheet, data is placed in first sheet
+ 104  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\solve_model2.gdx O=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\solve_model2.xlsx par= output rng=ARK_navn!A1';
+ 105  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\solve_model2.gdx O=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\solve_model2.xlsx par= output2 rng=ARK_navn2!A1';
+ 106  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\solve_model2.gdx O=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\solve_model2.xlsx par= output3 rng=ARK_navn3!A1';
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:11 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Include File Summary
+
+
+   SEQ   GLOBAL TYPE      PARENT   LOCAL  FILENAME
+
+     1        1 INPUT          0       0  C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\Opgavesaet_2_solve2.gms
+     2        1 INCLUDE        1       1  .C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\Opgavesaet_2_model2.gms
+
+
+COMPILATION TIME     =        0.016 SECONDS      3 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:11 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE model2 Using CNS From line 45
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           6     SINGLE EQUATIONS            6
+BLOCKS OF VARIABLES           8     SINGLE VARIABLES            8
+NON ZERO ELEMENTS            17     NON LINEAR N-Z              9
+CODE LENGTH                  20     CONSTANT POOL              16
+SINGLE =E|X= EQUS             6     SINGLE UNFIXED VARS         6
+
+
+GENERATION TIME      =        0.000 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:11 Page 4
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE model2 Using CNS From line 45
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   model2              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  45
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      16 Solved
+
+ RESOURCE USAGE, LIMIT          0.016 10000000000.000
+ ITERATION COUNT, LIMIT         2    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Warning **  The value of LFITER is out of range.
+                LFITER is decreased from 2147483647 to 1000000000.
+ 
+                   Pre-triangular equations:   2
+                   Post-triangular equations:  1
+ 
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.001 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:11 Page 5
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+----     47 VARIABLE Y.L                   =     1000.000  
+            VARIABLE w.L                   =        1.000  
+            VARIABLE L.L                   =     1000.000  
+            VARIABLE C.L                   =     1000.000  
+            VARIABLE p.L                   =        1.000  
+            VARIABLE N_bar.L               =     1000.000  
+            VARIABLE A.L                   =        1.000  
+            VARIABLE A0.L                  =        0.800  
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:11 Page 6
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE model2 Using CNS From line 66
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           6     SINGLE EQUATIONS            6
+BLOCKS OF VARIABLES           8     SINGLE VARIABLES            8
+NON ZERO ELEMENTS            17     NON LINEAR N-Z              9
+CODE LENGTH                  20     CONSTANT POOL              16
+SINGLE =E|X= EQUS             6     SINGLE UNFIXED VARS         6
+
+
+GENERATION TIME      =        0.000 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:11 Page 7
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE model2 Using CNS From line 66
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   model2              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  66
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      16 Solved
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT         3    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Warning **  The value of LFITER is out of range.
+                LFITER is decreased from 2147483647 to 1000000000.
+ 
+                   Pre-triangular equations:   2
+                   Post-triangular equations:  1
+ 
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.000 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+                             1  PROJECTED
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:11 Page 8
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE model2 Using CNS From line 84
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           6     SINGLE EQUATIONS            6
+BLOCKS OF VARIABLES           8     SINGLE VARIABLES            8
+NON ZERO ELEMENTS            17     NON LINEAR N-Z              9
+CODE LENGTH                  20     CONSTANT POOL              16
+SINGLE =E|X= EQUS             6     SINGLE UNFIXED VARS         6
+
+
+GENERATION TIME      =        0.000 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:11 Page 9
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE model2 Using CNS From line 84
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   model2              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  84
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      16 Solved
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT        10    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Warning **  The value of LFITER is out of range.
+                LFITER is decreased from 2147483647 to 1000000000.
+ 
+                   Pre-triangular equations:   2
+                   Post-triangular equations:  1
+ 
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.001 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+                             1  PROJECTED
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:41:11 Page 10
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+----     94 PARAMETER output  
+
+         baseline
+
+Y        1000.000
+w           1.000
+L        1000.000
+C        1000.000
+p           1.000
+N_bar    1000.000
+A           1.000
+A0          0.800
+
+
+
+EXECUTION TIME       =        3.078 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+
+
+USER: Course License                                 S210810|0002AO-GEN
+      University of Copenhagen, Department of Economics         DCE1507
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\Opgavesaet_2_solve2.gms
+Output     C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_2\Opgavesaet_2_solve2.lst

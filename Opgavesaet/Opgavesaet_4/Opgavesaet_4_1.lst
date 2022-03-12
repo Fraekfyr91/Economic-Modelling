@@ -1,0 +1,325 @@
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:38:50 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   1  *-----------------------------------------------------
+   2  * Opgavesæt 4
+   3  *-----------------------------------------------------
+   4   
+   6  option limcol=0, limrow=0;
+   7  option solprint=off;
+   8   
+   9  * Definerer 50 perioder
+  10  set t /t0 * t50/;
+  11   
+  12  parameter
+  13  delta;
+  14   
+  15  variables
+  16  K(t)
+  17  I(t);
+  18   
+  19  equations
+  20  E_1(t);
+  21   
+  22   
+  23  E_1(t) $ (ord(t) gt 1).. K(t) =e=  (1-delta)* K(t-1) +I(t);
+  24   
+  25   
+  26  model model1 / E_1/;
+  27  * Data
+  28  I.fx(t) = 100;
+  29  K.fx('t0')=500;
+  30   
+  31  *Kalibrering
+  32  delta = I.l('t0')/K.l('t0');
+  33  K.l(t) = (1-delta)*K.l(t-1)+I.l(t);
+  34   
+  35  set eksperimenter /K, shock1, shock2/;
+  36  parameter output;
+  37   
+  38  *0-stød:
+  39  solve model1 using cns;
+  40  output(t,'K') = K.l(t);
+  41  output(t,'I') = I.l(t);
+  42  display output;
+  43   
+  44  *Investeringsstød
+  45  *I =120 fra t9 og frem
+  46  I.fx(t)$ (ord(t) gt 9) = 120;
+  47   
+  48  *0-stød:
+  49  solve model1 using cns;
+  50  parameter output2;
+  51  output2(t,'K') = K.l(t);
+  52  output2(t,'I') = I.l(t);
+  53  display output2;
+  54   
+  55   
+  56   
+  57  *=== Export to Excel using GDX utilities
+  58  execute_unload "C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\solve_model1.gdx", output,output2;
+  59   
+  60  *=== Now write to variable levels to Excel file from GDX
+  61  *=== Since we do not specify a sheet, data is placed in first sheet
+  62  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\solve_model1.gdx O=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\solve_model1.xlsx par= output rng=ARK_navn!A1';
+  63  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\solve_model1.gdx O=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\solve_model1.xlsx par= output2 rng=ARK_navn2!A1';
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:38:50 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE model1 Using CNS From line 39
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           1     SINGLE EQUATIONS           50
+BLOCKS OF VARIABLES           2     SINGLE VARIABLES          101  1 projected
+NON ZERO ELEMENTS           150     NON LINEAR N-Z              0
+CODE LENGTH                   0     CONSTANT POOL              16
+SINGLE =E|X= EQUS            50     SINGLE UNFIXED VARS        50
+
+
+GENERATION TIME      =        0.000 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:38:50 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE model1 Using CNS From line 39
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   model1              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  39
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      15 Solved Unique
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT         2    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Warning **  The value of LFITER is out of range.
+                LFITER is decreased from 2147483647 to 1000000000.
+ 
+                   Pre-triangular equations:   50
+                   Post-triangular equations:  0
+ 
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.001 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:38:50 Page 4
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+----     42 PARAMETER output  
+
+              K           I
+
+t0      500.000     100.000
+t1      500.000     100.000
+t2      500.000     100.000
+t3      500.000     100.000
+t4      500.000     100.000
+t5      500.000     100.000
+t6      500.000     100.000
+t7      500.000     100.000
+t8      500.000     100.000
+t9      500.000     100.000
+t10     500.000     100.000
+t11     500.000     100.000
+t12     500.000     100.000
+t13     500.000     100.000
+t14     500.000     100.000
+t15     500.000     100.000
+t16     500.000     100.000
+t17     500.000     100.000
+t18     500.000     100.000
+t19     500.000     100.000
+t20     500.000     100.000
+t21     500.000     100.000
+t22     500.000     100.000
+t23     500.000     100.000
+t24     500.000     100.000
+t25     500.000     100.000
+t26     500.000     100.000
+t27     500.000     100.000
+t28     500.000     100.000
+t29     500.000     100.000
+t30     500.000     100.000
+t31     500.000     100.000
+t32     500.000     100.000
+t33     500.000     100.000
+t34     500.000     100.000
+t35     500.000     100.000
+t36     500.000     100.000
+t37     500.000     100.000
+t38     500.000     100.000
+t39     500.000     100.000
+t40     500.000     100.000
+t41     500.000     100.000
+t42     500.000     100.000
+t43     500.000     100.000
+t44     500.000     100.000
+t45     500.000     100.000
+t46     500.000     100.000
+t47     500.000     100.000
+t48     500.000     100.000
+t49     500.000     100.000
+t50     500.000     100.000
+
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:38:50 Page 5
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE model1 Using CNS From line 49
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           1     SINGLE EQUATIONS           50
+BLOCKS OF VARIABLES           2     SINGLE VARIABLES          101
+NON ZERO ELEMENTS           150     NON LINEAR N-Z              0
+CODE LENGTH                   0     CONSTANT POOL              16
+SINGLE =E|X= EQUS            50     SINGLE UNFIXED VARS        50
+
+
+GENERATION TIME      =        0.000 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:38:50 Page 6
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE model1 Using CNS From line 49
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   model1              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  49
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      15 Solved Unique
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT         2    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Warning **  The value of LFITER is out of range.
+                LFITER is decreased from 2147483647 to 1000000000.
+ 
+                   Pre-triangular equations:   50
+                   Post-triangular equations:  0
+ 
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.000 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+                            24  PROJECTED
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:38:50 Page 7
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+----     53 PARAMETER output2  
+
+              K           I
+
+t0      500.000     100.000
+t1      500.000     100.000
+t2      500.000     100.000
+t3      500.000     100.000
+t4      500.000     100.000
+t5      500.000     100.000
+t6      500.000     100.000
+t7      500.000     100.000
+t8      500.000     100.000
+t9      520.000     120.000
+t10     536.000     120.000
+t11     548.800     120.000
+t12     559.040     120.000
+t13     567.232     120.000
+t14     573.786     120.000
+t15     579.028     120.000
+t16     583.223     120.000
+t17     586.578     120.000
+t18     589.263     120.000
+t19     591.410     120.000
+t20     593.128     120.000
+t21     594.502     120.000
+t22     595.602     120.000
+t23     596.482     120.000
+t24     597.185     120.000
+t25     597.748     120.000
+t26     598.199     120.000
+t27     598.559     120.000
+t28     598.847     120.000
+t29     599.078     120.000
+t30     599.262     120.000
+t31     599.410     120.000
+t32     599.528     120.000
+t33     599.622     120.000
+t34     599.698     120.000
+t35     599.758     120.000
+t36     599.807     120.000
+t37     599.845     120.000
+t38     599.876     120.000
+t39     599.901     120.000
+t40     599.921     120.000
+t41     599.937     120.000
+t42     599.949     120.000
+t43     599.959     120.000
+t44     599.968     120.000
+t45     599.974     120.000
+t46     599.979     120.000
+t47     599.983     120.000
+t48     599.987     120.000
+t49     599.989     120.000
+t50     599.991     120.000
+
+
+
+EXECUTION TIME       =        2.094 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+
+
+USER: Course License                                 S210810|0002AO-GEN
+      University of Copenhagen, Department of Economics         DCE1507
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\Opgavesaet_4_1.gms
+Output     C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\Opgavesaet_4_1.lst

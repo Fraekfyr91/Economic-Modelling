@@ -1,0 +1,9 @@
+B 3 C o m p i l a t i o n
+B 73 Model Statistics    SOLVE model1 Using CNS From line 39
+B 88 Solution Report     SOLVE model1 Using CNS From line 39
+B 132 E x e c u t i o n
+I 132 output
+B 193 Model Statistics    SOLVE model1 Using CNS From line 49
+B 208 Solution Report     SOLVE model1 Using CNS From line 49
+B 253 E x e c u t i o n
+I 253 output2

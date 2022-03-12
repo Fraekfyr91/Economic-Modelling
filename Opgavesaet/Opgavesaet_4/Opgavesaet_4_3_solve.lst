@@ -1,0 +1,366 @@
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:40:30 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   1   
+   2  *indlæs modellen
+INCLUDE    C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\Opgavesaet_4_3_model.gms
+   4  *-----------------------------------------------------
+   5  * Opgavesæt 4.3
+   6  * Keynes-Ramsey forbruger
+   7  *-----------------------------------------------------
+   8  *reset t
+  10  *setter t til 50 perioder
+  11  set t /t0 * t50/;
+  12  *Definerer parametre og variable
+  13  parameter
+  14  rho
+  15  eta
+  16  r(t);
+  17   
+  18  variables
+  19  C(t)
+  20  B(t)
+  21  Y(t)
+  22  p(t);
+  23   
+  24  *definerer ligninger og sætter modellen op
+  25  equations
+  26  E_1(t)
+  27  E_2(t)
+  28  E_2term;
+  29   
+  30  E_1(t) $ (ord(t) gt 1 and ord(t) lt card(t)).. C(t+1) =e= ((1+r(t+1))/(1+eta))**(1/rho)*C(t);
+  31  E_2(t) $ (ord(t) gt 1).. B(t) =e= (1+r(t))*B(t-1)+Y(t)-p(t)*C(t);
+  32  E_2term.. B('t50') =e= B('t49');
+  33   
+  34  model model3 / E_1, E_2, E_2term/;
+  35   
+  36   
+  37   
+  39  option limcol=0, limrow=0;
+  40  option solprint=off;
+  41   
+  42   
+  43  *Initialiserer variable
+  44  Y.fx(t) =  1000;
+  45  B.fx('t0') = 700;
+  46   
+  47  eta = 0.04;
+  48  rho = 2;
+  49  p.fx(t)= 1;
+  50   
+  51  * kalibrering
+  52  r(t)       = eta;
+  53   
+  54  * initialisering
+  55  B.l(t) = 700 ;
+  56  *isoler Ct i ligning 2.
+  57  C.l(t)=(r(t)*B.l(t)+Y.l(t))/p.l(t);
+  58   
+  59  *0-stød:
+  60  solve model3 using cns;
+  61  parameter base;
+  62  base(t, 'C') = C.l(t);
+  63  base(t, 'r') = r(t);
+  64  base(t, 'B') = B.l(t);
+  65  base(t, 'Y') = Y.l(t);
+  66  display base;
+  67   
+  68   
+  69  Y.fx(t) $ (ord(t) gt 20) = Y.l(t)*1.05;
+  70   
+  71  Solve model3 using CNS;
+  72  parameter shock;
+  73  shock(t,'C')=C.l(t);
+  74  shock(t,'r')=r(t);
+  75  shock(t,'B')=B.l(t);
+  76  shock(t,'Y')=Y.l(t);
+  77  display shock;
+  78   
+  79  * 3.1.7 Overfør til excel
+  80  execute_unload "C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\solve_model3.gdx", base,shock;
+  81   
+  82  *=== Now write to variable levels to Excel file from GDX
+  83  *=== Since we do not specify a sheet, data is placed in first sheet
+  84  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\solve_model3.gdx O=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\solve_model3.xlsx par= base rng=ARK_navn!A1';
+  85  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\solve_model3.gdx O=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\solve_model3.xlsx par= shock rng=ARK_navn2!A1';
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:40:30 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Include File Summary
+
+
+   SEQ   GLOBAL TYPE      PARENT   LOCAL  FILENAME
+
+     1        1 INPUT          0       0  C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\Opgavesaet_4_3_solve.gms
+     2        3 INCLUDE        1       3  .C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\Opgavesaet_4_3_model.gms
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:40:30 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE model3 Using CNS From line 60
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           3     SINGLE EQUATIONS          100
+BLOCKS OF VARIABLES           4     SINGLE VARIABLES          201
+NON ZERO ELEMENTS           350     NON LINEAR N-Z            100
+CODE LENGTH                 200     CONSTANT POOL              16
+SINGLE =E|X= EQUS           100     SINGLE UNFIXED VARS       100
+
+
+GENERATION TIME      =        0.016 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:40:30 Page 4
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE model3 Using CNS From line 60
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   model3              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  60
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      16 Solved
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT         2    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Warning **  The value of LFITER is out of range.
+                LFITER is decreased from 2147483647 to 1000000000.
+ 
+                   Pre-triangular equations:   0
+                   Post-triangular equations:  0
+ 
+ 
+    It may be more efficient to turn the Post-triangular equations
+    into ordinary equations with option:
+ 
+    Lspost=False
+ 
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.001 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:40:30 Page 5
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+----     66 PARAMETER base  
+
+              C           r           B           Y
+
+t0     1028.000       0.040     700.000    1000.000
+t1     1028.000       0.040     700.000    1000.000
+t2     1028.000       0.040     700.000    1000.000
+t3     1028.000       0.040     700.000    1000.000
+t4     1028.000       0.040     700.000    1000.000
+t5     1028.000       0.040     700.000    1000.000
+t6     1028.000       0.040     700.000    1000.000
+t7     1028.000       0.040     700.000    1000.000
+t8     1028.000       0.040     700.000    1000.000
+t9     1028.000       0.040     700.000    1000.000
+t10    1028.000       0.040     700.000    1000.000
+t11    1028.000       0.040     700.000    1000.000
+t12    1028.000       0.040     700.000    1000.000
+t13    1028.000       0.040     700.000    1000.000
+t14    1028.000       0.040     700.000    1000.000
+t15    1028.000       0.040     700.000    1000.000
+t16    1028.000       0.040     700.000    1000.000
+t17    1028.000       0.040     700.000    1000.000
+t18    1028.000       0.040     700.000    1000.000
+t19    1028.000       0.040     700.000    1000.000
+t20    1028.000       0.040     700.000    1000.000
+t21    1028.000       0.040     700.000    1000.000
+t22    1028.000       0.040     700.000    1000.000
+t23    1028.000       0.040     700.000    1000.000
+t24    1028.000       0.040     700.000    1000.000
+t25    1028.000       0.040     700.000    1000.000
+t26    1028.000       0.040     700.000    1000.000
+t27    1028.000       0.040     700.000    1000.000
+t28    1028.000       0.040     700.000    1000.000
+t29    1028.000       0.040     700.000    1000.000
+t30    1028.000       0.040     700.000    1000.000
+t31    1028.000       0.040     700.000    1000.000
+t32    1028.000       0.040     700.000    1000.000
+t33    1028.000       0.040     700.000    1000.000
+t34    1028.000       0.040     700.000    1000.000
+t35    1028.000       0.040     700.000    1000.000
+t36    1028.000       0.040     700.000    1000.000
+t37    1028.000       0.040     700.000    1000.000
+t38    1028.000       0.040     700.000    1000.000
+t39    1028.000       0.040     700.000    1000.000
+t40    1028.000       0.040     700.000    1000.000
+t41    1028.000       0.040     700.000    1000.000
+t42    1028.000       0.040     700.000    1000.000
+t43    1028.000       0.040     700.000    1000.000
+t44    1028.000       0.040     700.000    1000.000
+t45    1028.000       0.040     700.000    1000.000
+t46    1028.000       0.040     700.000    1000.000
+t47    1028.000       0.040     700.000    1000.000
+t48    1028.000       0.040     700.000    1000.000
+t49    1028.000       0.040     700.000    1000.000
+t50    1028.000       0.040     700.000    1000.000
+
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:40:30 Page 6
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE model3 Using CNS From line 71
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           3     SINGLE EQUATIONS          100
+BLOCKS OF VARIABLES           4     SINGLE VARIABLES          201
+NON ZERO ELEMENTS           350     NON LINEAR N-Z            100
+CODE LENGTH                 200     CONSTANT POOL              16
+SINGLE =E|X= EQUS           100     SINGLE UNFIXED VARS       100
+
+
+GENERATION TIME      =        0.000 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:40:30 Page 7
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE model3 Using CNS From line 71
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   model3              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  71
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      16 Solved
+
+ RESOURCE USAGE, LIMIT          0.015 10000000000.000
+ ITERATION COUNT, LIMIT         3    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Warning **  The value of LFITER is out of range.
+                LFITER is decreased from 2147483647 to 1000000000.
+ 
+                   Pre-triangular equations:   0
+                   Post-triangular equations:  0
+ 
+ 
+    It may be more efficient to turn the Post-triangular equations
+    into ordinary equations with option:
+ 
+    Lspost=False
+ 
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.001 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:40:30 Page 8
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+----     77 PARAMETER shock  
+
+              C           r           B           Y
+
+t0     1028.000       0.040     700.000    1000.000
+t1     1051.732       0.040     676.268    1000.000
+t2     1051.732       0.040     651.586    1000.000
+t3     1051.732       0.040     625.918    1000.000
+t4     1051.732       0.040     599.222    1000.000
+t5     1051.732       0.040     571.459    1000.000
+t6     1051.732       0.040     542.585    1000.000
+t7     1051.732       0.040     512.557    1000.000
+t8     1051.732       0.040     481.327    1000.000
+t9     1051.732       0.040     448.848    1000.000
+t10    1051.732       0.040     415.070    1000.000
+t11    1051.732       0.040     379.940    1000.000
+t12    1051.732       0.040     343.406    1000.000
+t13    1051.732       0.040     305.410    1000.000
+t14    1051.732       0.040     265.894    1000.000
+t15    1051.732       0.040     224.798    1000.000
+t16    1051.732       0.040     182.058    1000.000
+t17    1051.732       0.040     137.608    1000.000
+t18    1051.732       0.040      91.380    1000.000
+t19    1051.732       0.040      43.303    1000.000
+t20    1051.732       0.040      43.303    1050.000
+t21    1051.732       0.040      43.303    1050.000
+t22    1051.732       0.040      43.303    1050.000
+t23    1051.732       0.040      43.303    1050.000
+t24    1051.732       0.040      43.303    1050.000
+t25    1051.732       0.040      43.303    1050.000
+t26    1051.732       0.040      43.303    1050.000
+t27    1051.732       0.040      43.303    1050.000
+t28    1051.732       0.040      43.303    1050.000
+t29    1051.732       0.040      43.303    1050.000
+t30    1051.732       0.040      43.303    1050.000
+t31    1051.732       0.040      43.303    1050.000
+t32    1051.732       0.040      43.303    1050.000
+t33    1051.732       0.040      43.303    1050.000
+t34    1051.732       0.040      43.303    1050.000
+t35    1051.732       0.040      43.303    1050.000
+t36    1051.732       0.040      43.303    1050.000
+t37    1051.732       0.040      43.303    1050.000
+t38    1051.732       0.040      43.303    1050.000
+t39    1051.732       0.040      43.303    1050.000
+t40    1051.732       0.040      43.303    1050.000
+t41    1051.732       0.040      43.303    1050.000
+t42    1051.732       0.040      43.303    1050.000
+t43    1051.732       0.040      43.303    1050.000
+t44    1051.732       0.040      43.303    1050.000
+t45    1051.732       0.040      43.303    1050.000
+t46    1051.732       0.040      43.303    1050.000
+t47    1051.732       0.040      43.303    1050.000
+t48    1051.732       0.040      43.303    1050.000
+t49    1051.732       0.040      43.303    1050.000
+t50    1051.732       0.040      43.303    1050.000
+
+
+
+EXECUTION TIME       =        1.687 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+
+
+USER: Course License                                 S210810|0002AO-GEN
+      University of Copenhagen, Department of Economics         DCE1507
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\Opgavesaet_4_3_solve.gms
+Output     C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\Opgavesaet_4_3_solve.lst

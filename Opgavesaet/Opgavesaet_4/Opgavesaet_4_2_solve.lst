@@ -1,0 +1,379 @@
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:39:56 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   2  option limcol=0, limrow=0;
+   3  option solprint=off;
+   4   
+   5  *indlæs modellen
+INCLUDE    C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\Opgavesaet_4_2_model.gms
+   7   
+   8  *reset t
+  10  *-----------------------------------------------------
+  11  * Opgavesæt 4.2
+  12  * Simpel Solow model uden befolkningsvækst
+  13  *-----------------------------------------------------
+  14  *Definer 50 perioder
+  15  set t /t0 * t50/;
+  16   
+  17  *Definer parametre og variable
+  18  parameter
+  19  delta
+  20  alpha;
+  21   
+  22  variables
+  23  y(t)
+  24  s(t)
+  25  k(t)
+  26  c(t)
+  27  i(t);
+  28   
+  29  *Definer ligninger og opsæt modellen
+  30  equations
+  31  E_1(t) 'Output/ indkomst per person'
+  32  E_2(t) 'Kapital per person'
+  33  E_3(t) 'Investeringer per person'
+  34  E_4(t) 'Privatforbrug per person'
+  35  ;
+  36   
+  37  E_1(t) $ (ord(t) gt 1).. y(t) =e= k(t)**alpha;
+  38  E_2(t) $ (ord(t) gt 1).. k(t) =e= (1-delta)*k(t-1) + i(t-1);
+  39  E_3(t) $ (ord(t) gt 1).. i(t) =e= s(t)*y(t);
+  40  E_4(t) $ (ord(t) gt 1).. c(t) =e= (1-s(t))*y(t);
+  41   
+  42  model model2 / E_1, E_2, E_3, E_4/;
+  43   
+  44   
+  45   
+  46  * initialiser
+  47  k.fx('t0')=1000;
+  48  k.l(t) =  k.l('t0');
+  49  i.fx('t0')=400;
+  50  i.l(t) =  i.l('t0');
+  51  y.l(t) =  500;
+  52   
+  53  *Kalibrering
+  54  alpha    = log(y.l('t0')) / log(k.l('t0'));
+  55  delta    = i.l('t0')/k.l('t0');
+  56  s.fx(t)  = k.l('t0')/y.l('t0') - (1-delta)*k.l('t0')/y.l('t0');
+  57  *initialisering af c
+  58  c.l(t)=  (1-s.l(t))*y.l(t);
+  59   
+  60   
+  61  *0-stød:
+  62  solve model2 using cns;
+  63  parameter base;
+  64  base(t, 'k') = k.l(t);
+  65  base(t, 'k*') = (s.l(t)/delta)**(1/(1-alpha));
+  66  base(t, 'y') = y.l(t);
+  67  base(t, 'c') = c.l(t);
+  68  base(t, 'i') = i.l(t);
+  69  base(t, 's') = s.l(t);
+  70  base(t, 'alpha') = alpha;
+  71  base(t, 'delta') = delta;
+  72   
+  73  display base;
+  74   
+  75   
+  76  s.fx(t) $ (ord(t) gt 10) = s.l(t) * 1.05;
+  77   
+  78  *0-stød:
+  79  solve model2 using cns;
+  80  parameter shock;
+  81  shock(t, 'k') = k.l(t);
+  82  shock(t, 'k*') = (s.l(t)/delta)**(1/(1-alpha));
+  83  shock(t, 'y') = y.l(t);
+  84  shock(t, 'c') = c.l(t);
+  85  shock(t, 'i') = i.l(t);
+  86  shock(t, 's') = s.l(t);
+  87  shock(t, 'alpha') = alpha;
+  88  shock(t, 'delta') = delta;
+  89   
+  90  display shock;
+  91  * 3.1.7 Overfør til excel
+  92  execute_unload "C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\solve_model2.gdx", base,shock;
+  93   
+  94  *=== Now write to variable levels to Excel file from GDX
+  95  *=== Since we do not specify a sheet, data is placed in first sheet
+  96  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\solve_model2.gdx O=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\solve_model2.xlsx par= base rng=ARK_navn!A1';
+  97  execute 'gdxxrw.exe I=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\solve_model2.gdx O=C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\solve_model2.xlsx par= shock rng=ARK_navn2!A1';
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:39:56 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Include File Summary
+
+
+   SEQ   GLOBAL TYPE      PARENT   LOCAL  FILENAME
+
+     1        1 INPUT          0       0  C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\Opgavesaet_4_2_solve.gms
+     2        6 INCLUDE        1       6  .C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\Opgavesaet_4_2_model.gms
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:39:56 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE model2 Using CNS From line 62
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           4     SINGLE EQUATIONS          200
+BLOCKS OF VARIABLES           5     SINGLE VARIABLES          252
+NON ZERO ELEMENTS           550     NON LINEAR N-Z            250
+CODE LENGTH                 851     CONSTANT POOL              17
+SINGLE =E|X= EQUS           200     SINGLE UNFIXED VARS       200
+
+
+GENERATION TIME      =        0.016 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:39:56 Page 4
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE model2 Using CNS From line 62
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   model2              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  62
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      15 Solved Unique
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT         2    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Warning **  The value of LFITER is out of range.
+                LFITER is decreased from 2147483647 to 1000000000.
+ 
+                   Pre-triangular equations:   200
+                   Post-triangular equations:  0
+ 
+ 
+    It may be more efficient to turn the Post-triangular equations
+    into ordinary equations with option:
+ 
+    Lspost=False
+ 
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.001 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.001 =100.0%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:39:56 Page 5
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+----     73 PARAMETER base  
+
+              k          k*           y           c           i           s       alpha       delta
+
+t0     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t1     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t2     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t3     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t4     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t5     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t6     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t7     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t8     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t9     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t10    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t11    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t12    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t13    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t14    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t15    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t16    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t17    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t18    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t19    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t20    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t21    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t22    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t23    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t24    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t25    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t26    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t27    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t28    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t29    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t30    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t31    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t32    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t33    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t34    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t35    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t36    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t37    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t38    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t39    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t40    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t41    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t42    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t43    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t44    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t45    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t46    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t47    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t48    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t49    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t50    1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:39:56 Page 6
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE model2 Using CNS From line 79
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           4     SINGLE EQUATIONS          200
+BLOCKS OF VARIABLES           5     SINGLE VARIABLES          252
+NON ZERO ELEMENTS           550     NON LINEAR N-Z            250
+CODE LENGTH                 851     CONSTANT POOL              17
+SINGLE =E|X= EQUS           200     SINGLE UNFIXED VARS       200
+
+
+GENERATION TIME      =        0.000 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:39:56 Page 7
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE model2 Using CNS From line 79
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   model2              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  79
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      15 Solved Unique
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT         2    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T 3   version 3.17K
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Warning **  The value of LFITER is out of range.
+                LFITER is decreased from 2147483647 to 1000000000.
+ 
+                   Pre-triangular equations:   200
+                   Post-triangular equations:  0
+ 
+ 
+    It may be more efficient to turn the Post-triangular equations
+    into ordinary equations with option:
+ 
+    Lspost=False
+ 
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.001 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+                            21  PROJECTED
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/13/22 09:39:56 Page 8
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+----     90 PARAMETER shock  
+
+              k          k*           y           c           i           s       alpha       delta
+
+t0     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t1     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t2     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t3     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t4     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t5     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t6     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t7     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t8     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t9     1000.000    1000.000     500.000     100.000     400.000       0.800       0.900       0.400
+t10    1000.000    1626.178     500.000      80.000     420.000       0.840       0.900       0.400
+t11    1020.000    1626.178     508.988      81.438     427.550       0.840       0.900       0.400
+t12    1039.550    1626.178     517.756      82.841     434.915       0.840       0.900       0.400
+t13    1058.645    1626.178     526.304      84.209     442.095       0.840       0.900       0.400
+t14    1077.282    1626.178     534.633      85.541     449.091       0.840       0.900       0.400
+t15    1095.461    1626.178     542.742      86.839     455.903       0.840       0.900       0.400
+t16    1113.180    1626.178     550.634      88.101     462.532       0.840       0.900       0.400
+t17    1130.440    1626.178     558.309      89.329     468.979       0.840       0.900       0.400
+t18    1147.244    1626.178     565.770      90.523     475.246       0.840       0.900       0.400
+t19    1163.593    1626.178     573.018      91.683     481.335       0.840       0.900       0.400
+t20    1179.491    1626.178     580.057      92.809     487.248       0.840       0.900       0.400
+t21    1194.942    1626.178     586.888      93.902     492.986       0.840       0.900       0.400
+t22    1209.952    1626.178     593.516      94.963     498.554       0.840       0.900       0.400
+t23    1224.525    1626.178     599.944      95.991     503.953       0.840       0.900       0.400
+t24    1238.668    1626.178     606.174      96.988     509.186       0.840       0.900       0.400
+t25    1252.387    1626.178     612.211      97.954     514.257       0.840       0.900       0.400
+t26    1265.689    1626.178     618.058      98.889     519.169       0.840       0.900       0.400
+t27    1278.582    1626.178     623.719      99.795     523.924       0.840       0.900       0.400
+t28    1291.074    1626.178     629.199     100.672     528.527       0.840       0.900       0.400
+t29    1303.171    1626.178     634.500     101.520     532.980       0.840       0.900       0.400
+t30    1314.883    1626.178     639.628     102.341     537.288       0.840       0.900       0.400
+t31    1326.217    1626.178     644.586     103.134     541.453       0.840       0.900       0.400
+t32    1337.183    1626.178     649.379     103.901     545.479       0.840       0.900       0.400
+t33    1347.788    1626.178     654.011     104.642     549.369       0.840       0.900       0.400
+t34    1358.042    1626.178     658.486     105.358     553.128       0.840       0.900       0.400
+t35    1367.953    1626.178     662.808     106.049     556.758       0.840       0.900       0.400
+t36    1377.530    1626.178     666.981     106.717     560.264       0.840       0.900       0.400
+t37    1386.782    1626.178     671.009     107.362     563.648       0.840       0.900       0.400
+t38    1395.717    1626.178     674.898     107.984     566.914       0.840       0.900       0.400
+t39    1404.344    1626.178     678.650     108.584     570.066       0.840       0.900       0.400
+t40    1412.672    1626.178     682.269     109.163     573.106       0.840       0.900       0.400
+t41    1420.710    1626.178     685.760     109.722     576.039       0.840       0.900       0.400
+t42    1428.465    1626.178     689.127     110.260     578.867       0.840       0.900       0.400
+t43    1435.945    1626.178     692.373     110.780     581.593       0.840       0.900       0.400
+t44    1443.161    1626.178     695.502     111.280     584.222       0.840       0.900       0.400
+t45    1450.118    1626.178     698.518     111.763     586.755       0.840       0.900       0.400
+t46    1456.826    1626.178     701.424     112.228     589.197       0.840       0.900       0.400
+t47    1463.292    1626.178     704.225     112.676     591.549       0.840       0.900       0.400
+t48    1469.524    1626.178     706.922     113.108     593.815       0.840       0.900       0.400
+t49    1475.529    1626.178     709.521     113.523     595.997       0.840       0.900       0.400
+t50    1481.315    1626.178     712.023     113.924     598.099       0.840       0.900       0.400
+
+
+
+EXECUTION TIME       =        2.031 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+
+
+USER: Course License                                 S210810|0002AO-GEN
+      University of Copenhagen, Department of Economics         DCE1507
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\Opgavesaet_4_2_solve.gms
+Output     C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_4\Opgavesaet_4_2_solve.lst

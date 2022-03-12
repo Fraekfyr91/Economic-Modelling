@@ -1,0 +1,41 @@
+B 3 C o m p i l a t i o n
+B 347 Include File Summary
+B 360 Model Statistics    SOLVE model1 Using CNS From line 141
+B 375 Solution Report     SOLVE model1 Using CNS From line 141
+B 419 E x e c u t i o n
+I 421 Y
+I 422 C
+I 423 w
+I 428 L
+I 434 p
+I 435 N
+I 440 mu
+I 445 output
+B 466 Model Statistics    SOLVE model1 Using CNS From line 171
+B 481 Solution Report     SOLVE model1 Using CNS From line 171
+B 525 E x e c u t i o n
+I 525 output2
+B 547 Model Statistics    SOLVE model1 Using CNS From line 196
+B 562 Solution Report     SOLVE model1 Using CNS From line 196
+B 607 E x e c u t i o n
+I 607 output3
+B 629 Model Statistics    SOLVE model1 Using CNS From line 219
+B 644 Solution Report     SOLVE model1 Using CNS From line 219
+B 689 E x e c u t i o n
+I 689 output4
+B 711 Model Statistics    SOLVE model1 Using CNS From line 240
+B 726 Solution Report     SOLVE model1 Using CNS From line 240
+B 771 E x e c u t i o n
+I 771 output5
+B 793 Model Statistics    SOLVE model1 Using CNS From line 266
+B 808 Solution Report     SOLVE model1 Using CNS From line 266
+B 853 E x e c u t i o n
+I 853 output6
+B 875 Model Statistics    SOLVE model1 Using CNS From line 291
+B 890 Solution Report     SOLVE model1 Using CNS From line 291
+B 935 E x e c u t i o n
+I 935 output7
+B 957 Model Statistics    SOLVE model1 Using CNS From line 314
+B 972 Solution Report     SOLVE model1 Using CNS From line 314
+B 1017 E x e c u t i o n
+I 1017 output8

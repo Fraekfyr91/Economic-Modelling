@@ -1,0 +1,251 @@
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/12/22 09:17:50 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   1  *** Opgave 1 ***
+   2  * 1.1 Lav et set med de tre lande
+   3  Set         lande / USA, EU, Kina /;
+   4   
+   5  *1.2 Lav en parameter, som angiver de tre landes BNP
+   6  Parameter   BNP(lande) "BNP i lande" /
+   7              USA 50
+   8              EU 40
+   9              Kina 35/;
+  10   
+  11  *1.3 Beregn verdens samlede BNP
+  12  parameter   total  "Verdens totale BNP";
+  13   
+  14  total = sum(lande, BNP(lande));
+  15   
+  16  Display total;
+  17   
+  18  *Læg BNP for USA og EU sammen
+  19  set vesten / USA, EU/;
+  20   
+  21  Parameter   BNP_vest(vesten) "BNP i Vesten" /
+  22              USA 50
+  23              EU 40/;
+  24   
+  25  parameter total_vest 'Vestens totale BNP';
+  26  total_vest = sum( vesten , BNP_vest(vesten));
+  27  Display total_vest;
+  28   
+  29  *1.5 Find det højeste og laveste BNP
+  30  parameter max_bnp "højeste BNP i verden";
+  31  max_bnp = smax(lande,BNP(lande));
+  32   
+  33  Display max_bnp;
+  34  parameter min_bnp 'mindste BNP i verden';
+  35  min_bnp = smin(lande,BNP(lande));
+  36  Display min_bnp;
+  37   
+  38   
+  39  *** Opgave 2***
+  40  *2.1 Lav et set med de tre lande
+  41  *2.2 Lav et set med 10 år
+  42  set t "Tids perioder" /1*10/;
+  43  *2.3 Lav en parameter, som angiver de tre landes BNP
+  44  parameter BNP_t(lande,t);
+  45          BNP_t(lande('USA'),t) = BNP('USA')- (ord(t)-1);
+  46          BNP_t(lande('EU'),t) = BNP('EU')+(0.5*(ord(t)-1));
+  47          BNP_t(lande('Kina'),t) = BNP('Kina')*(1.07**(ord(t)-1));
+  48   
+  49  display BNP_t;
+  50   
+  51  * Beregn verdens samlede BNP for de enkelte år
+  52  parameter BNPtotal(t);
+  53  BNPtotal(t) = SUM(lande, BNP_t(lande,t));
+  54  display BNPtotal;
+  55   
+  56  *Nu fordobles BNP i alle årene efter år 5 for alle lande
+  57  *2.5 Beregn det nye BNP for alle lande i alle år
+  58  BNP_t(lande,t) $ (ord(t)>5) = BNP_t(lande,t)* 2;
+  59  display BNP_t;
+  60   
+  61   
+  62  ***Opgave 3
+  63   
+INCLUDE    C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_1\DogBdata.gms
+  65  sets
+  66  Aar /A10*A12/
+  67  Maa 'M�ned' /M1*M12/
+  68  Type /
+  69  DK "Antal udstedte dankort (tusinde stk.)"
+  70  Tra "Samlet transaktionstal med dankort (tusinde stk.)"
+  71  Oms "Oms�tning mio. kr."
+  72  BeS "Antal betalinger via Betalingsservice (tusinde stk.)" /
+  73  ;
+  74   
+  75  Table Data(Aar,Maa,Type) "Data fra Statistikbanken.dk MPK60"
+  76               DK           Tra          Oms          BeS
+  77  A10. M1      4201        64359        21080        20976
+  78  A10. M2      4217        61746        19665        16757
+  79  A10. M3      4233        74993        25731        17249
+  80  A10. M4      4246        70172        23564        17836
+  81  A10. M5      4268        75771        25542        15837
+  82  A10. M6      4309        74952        25206        15440
+  83  A10. M7      4304        75152        24528        19598
+  84  A10. M8      4326        73714        24206        16317
+  85  A10. M9      4347        70876        22992        17096
+  86  A10. M10      4349        74330        23964        18055
+  87  A10. M11      4365        73624        23694        16390
+  88  A10. M12      4374        82688        29270        16118
+  89  A11. M1      4391        68171        22164        21431
+  90  A11. M2      4394        65747        20775        17503
+  91  A11. M3      4412        75253        24767        18323
+  92  A11. M4      4425        78558        26208        18119
+  93  A11. M5      4443        80059        26501        16426
+  94  A11. M6      4458        78959        26062        16360
+  95  A11. M7      4489        76916        24682        19635
+  96  A11. M8      4515        78198        24947        16983
+  97  A11. M9      4562        75083        23428        18056
+  98  A11. M10      4588        77948        24155        18310
+  99  A11. M11      4417        78133        24199        16443
+ 100  A11. M12      4496        89447        30387        16776
+ 101  A12. M1      4642        72408        22657        21536
+ 102  A12. M2      4666        71278        21558        17933
+ 103  A12. M3      4784        82082        26401        19176
+ 104  A12. M4      4737        79054        25847        18621
+ 105  A12. M5      4722        85822        27837        16541
+ 106  A12. M6      4803        83316        27309        17323
+ 107  A12. M7      4765        81096        25430        20128
+ 108  A12. M8      4761        83650        26139        17119
+ 109  A12. M9      4792        79257        24543        18148
+ 110  A12. M10      4804        82558        25613        18451
+ 111  A12. M11      4815        83271        25761        16476
+ 112  A12. M12      4794        91585        30783        18103
+ 113  ;
+ 114   
+ 115   
+ 116  * 3.1 Dan en ny parameter og udregn antal tansaktioner per år
+ 117  parameter trans(aar);
+ 118   
+ 119  trans(aar) = sum(maa, Data(Aar,Maa,'tra'))*1000;
+ 120   
+ 121  display trans;
+ 122   
+ 123  *3.2 Vis omsætningen i december og i de tre sommermåneder for alle år.
+ 124  parameter oms_dec(aar);
+ 125  oms_dec(aar) =  Data(Aar,'M12','Oms')  ;
+ 126   
+ 127  display oms_dec;
+ 128   
+ 129  parameter oms_sommer(aar,maa);
+ 130  oms_sommer(aar,maa) $ ((ord(maa) ge 6) and (ord(maa) le 8)) =  Data(Aar,Maa,'Oms')  ;
+ 131   
+ 132  display oms_sommer;
+ 133  *3.3 Udregn omsætningen per dankort for alle måneder og år
+ 134  parameter Oms_DK(aar,maa);
+ 135  Oms_DK(aar,maa)= (data(Aar,Maa,'oms')*1000000)/(data(Aar,Maa,'DK')*1000)
+ 136  display oms_DK
+ 137  *3.4 Hvad er omsætningen per Dankort, når den er højest
+ 138  parameter omsDK_max;
+ 139  omsDK_max = smax((Aar,Maa), Oms_DK(Aar,Maa));
+ 140  display omsDK_max;
+ 141   
+ 142  parameter max_aar_mdr;
+ 143  max_aar_mdr(Aar,Maa)=yes$ (Oms_DK(Aar,Maa)= omsDK_max);
+ 144  display max_aar_mdr;
+ 145   
+ 146   
+ 147   
+ 148   
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/12/22 09:17:50 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Include File Summary
+
+
+   SEQ   GLOBAL TYPE      PARENT   LOCAL  FILENAME
+
+     1        1 INPUT          0       0  C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_1\Opgaves�t_1.gms
+     2       64 INCLUDE        1      64  .C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_1\DogBdata.gms
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 01/12/22 09:17:50 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+----     16 PARAMETER total                =      125.000  Verdens totale BNP
+
+----     27 PARAMETER total_vest           =       90.000  Vestens totale BNP
+
+----     33 PARAMETER max_bnp              =       50.000  højeste BNP i verden
+
+----     36 PARAMETER min_bnp              =       35.000  mindste BNP i verden
+
+----     49 PARAMETER BNP_t  
+
+               1           2           3           4           5           6           7           8           9          10
+
+USA       50.000      49.000      48.000      47.000      46.000      45.000      44.000      43.000      42.000      41.000
+EU        40.000      40.500      41.000      41.500      42.000      42.500      43.000      43.500      44.000      44.500
+Kina      35.000      37.450      40.072      42.877      45.878      49.089      52.526      56.202      60.137      64.346
+
+
+----     54 PARAMETER BNPtotal  
+
+1  125.000,    2  126.950,    3  129.072,    4  131.377,    5  133.878,    6  136.589,    7  139.526,    8  142.702,    9  146.137,    10 149.846
+
+
+----     59 PARAMETER BNP_t  
+
+               1           2           3           4           5           6           7           8           9          10
+
+USA       50.000      49.000      48.000      47.000      46.000      90.000      88.000      86.000      84.000      82.000
+EU        40.000      40.500      41.000      41.500      42.000      85.000      86.000      87.000      88.000      89.000
+Kina      35.000      37.450      40.072      42.877      45.878      98.179     105.051     112.405     120.273     128.692
+
+
+----    121 PARAMETER trans  
+
+A10 8.723770E+8,    A11 9.224720E+8,    A12 9.753770E+8
+
+
+----    127 PARAMETER oms_dec  
+
+A10 29270.000,    A11 30387.000,    A12 30783.000
+
+
+----    132 PARAMETER oms_sommer  
+
+             M6          M7          M8
+
+A10   25206.000   24528.000   24206.000
+A11   26062.000   24682.000   24947.000
+A12   27309.000   25430.000   26139.000
+
+
+----    136 PARAMETER Oms_DK  
+
+             M1          M2          M3          M4          M5          M6          M7          M8          M9         M10         M11         M12
+
+A10    5017.853    4663.268    6078.668    5549.694    5984.536    5849.617    5698.885    5595.469    5289.165    5510.232    5428.179    6691.815
+A11    5047.597    4728.038    5613.554    5922.712    5964.664    5846.119    5498.329    5525.360    5135.467    5264.821    5478.605    6758.674
+A12    4880.870    4620.231    5518.604    5456.407    5895.172    5685.821    5336.831    5490.233    5121.661    5331.599    5350.156    6421.151
+
+
+----    140 PARAMETER omsDK_max            =     6758.674  
+
+----    144 PARAMETER max_aar_mdr  
+
+            M12
+
+A11       1.000
+
+
+
+EXECUTION TIME       =        0.000 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+
+
+USER: Course License                                 S210810|0002AO-GEN
+      University of Copenhagen, Department of Economics         DCE1507
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_1\Opgaves�t_1.gms
+Output     C:\Users\45238\Desktop\OEM\Opgavesaet\Opgavesaet_1\Opgaves�t_1.lst
